@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoMinon(((</title>
+    <title>L Speed💔💔💔</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -28,7 +28,7 @@
             z-index: -1;
             /* Replace with your background image filename */
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
-                        url('BG.jpg') center/cover no-repeat;
+                        url('your-background-image.jpg') center/cover no-repeat;
             transition: all 0.3s ease;
         }
 
@@ -235,6 +235,19 @@
             color: #aaa;
         }
 
+        .error-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 100;
+            display: none;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2.5rem;
@@ -258,19 +271,16 @@
     <div id="background-container" class="pulse"></div>
     
     <div class="content">
-        <h1>MELODIES</h1>
-        <p>✝✝✝</p>
+        <h1>Select The Melody</h1>
+        <p>S</p>
         
         <div class="controls">
             <div class="song-selector">
                 <label for="songSelect"><i class="fas fa-music"></i> Select Song:</label>
                 <select id="songSelect">
                     <!-- Replace these with your MP3 filenames -->
-                    <option value="Patrick">Penis Music</option>
-                    <option value="Ladeyh">LADEIHHEARMETONIGHT</option>
-                    <option value="Horror">Scary</option>
-                    <option value="Bird">Бiрд</option>
-                    <option value="Alone">ScarySecond</option>
+                    <option value="Patrick">Patrick</option>
+                    <option value="Patrick">Patrick</option>
                 </select>
             </div>
             
@@ -292,12 +302,14 @@
     </div>
     
     <div class="instructions">
-        <i class="fas fa-info-circle"></i> 🛐🛐
+        <i class="fas fa-info-circle"></i> ✝✝✝✝✝
     </div>
     
     <div class="visualizer-container">
         <div class="visualizer" id="visualizer"></div>
     </div>
+
+    <div class="error-message" id="errorMessage"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -308,12 +320,22 @@
             const backgroundContainer = document.getElementById('backgroundContainer');
             const visualizer = document.getElementById('visualizer');
             const nowPlaying = document.getElementById('nowPlaying');
+            const errorMessage = document.getElementById('errorMessage');
             
             // Create audio context and elements
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            let audioContext;
             let audioElement = new Audio();
             let sourceNode, analyser, dataArray;
             let isPlaying = false;
+            let animationId;
+            
+            // Initialize audio context on first user interaction
+            function initAudioContext() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return audioContext;
+            }
             
             // Set initial audio source
             audioElement.src = songSelect.value;
@@ -330,6 +352,10 @@
             
             // Set up audio analysis
             function setupAudioAnalysis() {
+                if (!audioContext) {
+                    initAudioContext();
+                }
+                
                 if (sourceNode) {
                     sourceNode.disconnect();
                 }
@@ -347,7 +373,10 @@
             
             // Animation function for visualizer
             function animateVisualizer() {
-                if (!analyser || !isPlaying) return;
+                if (!analyser || !isPlaying) {
+                    cancelAnimationFrame(animationId);
+                    return;
+                }
                 
                 analyser.getByteFrequencyData(dataArray);
                 
@@ -366,45 +395,67 @@
                         hsl(${hue + 40}, 100%, 65%))`;
                 }
                 
-                requestAnimationFrame(animateVisualizer);
+                animationId = requestAnimationFrame(animateVisualizer);
+            }
+            
+            // Show error message
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
             }
             
             // Play/pause functionality
-            playButton.addEventListener('click', function() {
-                if (!isPlaying) {
-                    // Resume audio context if it was suspended
-                    if (audioContext.state === 'suspended') {
-                        audioContext.resume();
-                    }
-                    
-                    audioElement.play().then(() => {
+            playButton.addEventListener('click', async function() {
+                try {
+                    if (!isPlaying) {
+                        // Initialize audio context on first play
+                        initAudioContext();
+                        
+                        // Resume audio context if it was suspended (required by browsers)
+                        if (audioContext.state === 'suspended') {
+                            await audioContext.resume();
+                        }
+                        
+                        // Set up audio analysis if not already done
+                        if (!analyser) {
+                            setupAudioAnalysis();
+                        }
+                        
+                        // Play audio
+                        await audioElement.play();
                         isPlaying = true;
                         playButton.innerHTML = '<i class="fas fa-pause"></i> Pause Music';
                         
                         // Start visualizer animation
-                        setupAudioAnalysis();
                         animateVisualizer();
                         
                         // Add dancing effect to background
                         backgroundContainer.classList.add('dancing');
                         backgroundContainer.classList.remove('pulse');
-                    }).catch(error => {
-                        console.error("Error playing audio:", error);
-                        alert("Error playing audio. Please check the console for details.");
-                    });
-                } else {
-                    audioElement.pause();
-                    isPlaying = false;
-                    playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
-                    
-                    // Remove dancing effect
-                    backgroundContainer.classList.remove('dancing');
-                    backgroundContainer.classList.add('pulse');
-                    
-                    // Reset visualizer bars
-                    bars.forEach(bar => {
-                        bar.style.height = '4%';
-                    });
+                    } else {
+                        // Pause audio
+                        audioElement.pause();
+                        isPlaying = false;
+                        playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
+                        
+                        // Remove dancing effect
+                        backgroundContainer.classList.remove('dancing');
+                        backgroundContainer.classList.add('pulse');
+                        
+                        // Stop visualizer animation
+                        cancelAnimationFrame(animationId);
+                        
+                        // Reset visualizer bars
+                        bars.forEach(bar => {
+                            bar.style.height = '4%';
+                        });
+                    }
+                } catch (error) {
+                    console.error("Audio playback error:", error);
+                    showError("Error playing audio: " + error.message);
                 }
             });
             
@@ -414,31 +465,54 @@
             });
             
             // Song selection
-            songSelect.addEventListener('change', function() {
+            songSelect.addEventListener('change', async function() {
                 const wasPlaying = isPlaying;
                 
                 // Pause current audio
                 audioElement.pause();
                 isPlaying = false;
+                playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
+                
+                // Stop visualizer animation
+                cancelAnimationFrame(animationId);
+                
+                // Reset visualizer bars
+                bars.forEach(bar => {
+                    bar.style.height = '4%';
+                });
+                
+                // Remove dancing effect
+                backgroundContainer.classList.remove('dancing');
+                backgroundContainer.classList.add('pulse');
                 
                 // Change audio source
                 audioElement.src = songSelect.value;
                 nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
                 
-                // Reset analyser
-                if (sourceNode) {
-                    sourceNode.disconnect();
-                }
+                // Reset analyser for new source
                 analyser = null;
                 
                 // If it was playing, start the new song
                 if (wasPlaying) {
-                    audioElement.play().then(() => {
-                        isPlaying = true;
-                        setupAudioAnalysis();
-                    }).catch(error => {
-                        console.error("Error playing audio:", error);
-                    });
+                    // Small delay to ensure the new source is loaded
+                    setTimeout(async () => {
+                        try {
+                            await audioElement.play();
+                            isPlaying = true;
+                            playButton.innerHTML = '<i class="fas fa-pause"></i> Pause Music';
+                            
+                            // Set up audio analysis for new source
+                            setupAudioAnalysis();
+                            animateVisualizer();
+                            
+                            // Add dancing effect
+                            backgroundContainer.classList.add('dancing');
+                            backgroundContainer.classList.remove('pulse');
+                        } catch (error) {
+                            console.error("Error playing new song:", error);
+                            showError("Error playing the selected song: " + error.message);
+                        }
+                    }, 100);
                 }
             });
             
@@ -451,8 +525,29 @@
             // Handle audio errors
             audioElement.addEventListener('error', function(e) {
                 console.error("Audio error:", e);
-                alert("Error loading audio file. Please check the file path and format.");
+                showError("Error loading audio file. Please check the file path and format.");
             });
+            
+            // Handle audio ending (for non-looping scenarios)
+            audioElement.addEventListener('ended', function() {
+                if (!audioElement.loop) {
+                    isPlaying = false;
+                    playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
+                    backgroundContainer.classList.remove('dancing');
+                    backgroundContainer.classList.add('pulse');
+                    cancelAnimationFrame(animationId);
+                    
+                    // Reset visualizer bars
+                    bars.forEach(bar => {
+                        bar.style.height = '4%';
+                    });
+                }
+            });
+            
+            // Initialize audio context on any user interaction (required by browsers)
+            document.addEventListener('click', function() {
+                initAudioContext();
+            }, { once: true });
         });
     </script>
 </body>
