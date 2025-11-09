@@ -10,12 +10,34 @@
 <p>i define the reality itself</p>
 
 
-<img src="Minon.jpg" 
-     alt="Swag minon" 
-     style="max-width: 200%; height: auto;">
+<style>
+    .full-page-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        object-fit: cover;
+        z-index: -1;
+    }
+    
+    .content {
+        position: relative;
+        z-index: 1;
+        color: white;
+        padding: 20px;
+    }
+</style>
+
+<img src="Minon.jpg" alt="Minon" class="full-page-image">
+<div class="content">
+    <h1>a</h1>
+    <p>a</p>
+</div>
   
 </body>
 </html>
+
 
 
 
