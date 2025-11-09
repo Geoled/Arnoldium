@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Visualizer Experience</title>
+    <title>NoMinon(((</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            color: white;
             background-color: #000;
+            color: white;
         }
 
         #background-container {
@@ -25,9 +26,9 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-                        url('https://pin.it/2sgOok9G5') center/cover no-repeat;
-            transition: transform 0.3s ease;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)), 
+                        url('BG.jpg') center/cover no-repeat;
+            transition: all 0.3s ease;
         }
 
         .content {
@@ -40,15 +41,22 @@
             height: 100vh;
             padding: 20px;
             text-align: center;
+            backdrop-filter: blur(2px);
         }
 
         h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            font-size: 4rem;
+            margin-bottom: 15px;
             text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            background: linear-gradient(to right, #ff7e5f, #feb47b, #6a11cb, #2575fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 5px rgba(255, 126, 95, 0.5)); }
+            100% { filter: drop-shadow(0 0 15px rgba(106, 17, 203, 0.5)); }
         }
 
         p {
@@ -56,14 +64,47 @@
             max-width: 600px;
             margin-bottom: 30px;
             line-height: 1.6;
+            color: #e0e0e0;
         }
 
         .controls {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 25px;
             margin-bottom: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .song-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .song-selector label {
+            font-size: 1.1rem;
+            color: #feb47b;
+        }
+
+        #songSelect {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid #ff7e5f;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #songSelect:hover {
+            background: rgba(255, 126, 95, 0.2);
         }
 
         .play-button {
@@ -76,6 +117,9 @@
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 4px 15px rgba(255, 126, 95, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .play-button:hover {
@@ -86,11 +130,12 @@
         .volume-control {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            width: 100%;
         }
 
         .volume-slider {
-            width: 200px;
+            flex: 1;
             height: 8px;
             -webkit-appearance: none;
             background: rgba(255, 255, 255, 0.2);
@@ -105,6 +150,12 @@
             border-radius: 50%;
             background: #ff7e5f;
             cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.8);
+        }
+
+        .volume-icon {
+            color: #ff7e5f;
+            font-size: 1.2rem;
         }
 
         .visualizer-container {
@@ -112,27 +163,29 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 150px;
+            height: 180px;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: flex-end;
             padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .visualizer {
             display: flex;
             align-items: flex-end;
-            height: 100px;
-            gap: 3px;
+            height: 120px;
+            gap: 4px;
         }
 
         .bar {
-            width: 8px;
-            background: linear-gradient(to top, #ff7e5f, #feb47b);
-            border-radius: 4px 4px 0 0;
+            width: 12px;
+            background: linear-gradient(to top, #ff7e5f, #feb47b, #6a11cb, #2575fc);
+            border-radius: 6px 6px 0 0;
             transition: height 0.1s ease;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.5);
         }
 
         .dancing {
@@ -140,38 +193,109 @@
         }
 
         @keyframes dance {
-            0% { transform: rotate(0deg) scale(1); }
-            25% { transform: rotate(1deg) scale(1.02); }
-            50% { transform: rotate(-1deg) scale(1.04); }
-            75% { transform: rotate(0.5deg) scale(1.02); }
-            100% { transform: rotate(-0.5deg) scale(1); }
+            0% { transform: rotate(0.5deg) scale(1.02); }
+            25% { transform: rotate(-0.5deg) scale(1.04); }
+            50% { transform: rotate(0.7deg) scale(1.01); }
+            75% { transform: rotate(-0.7deg) scale(1.03); }
+            100% { transform: rotate(0.5deg) scale(1.02); }
+        }
+
+        .song-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .pulse {
-            animation: pulse 0.5s infinite alternate;
+            animation: pulse 2s infinite alternate;
         }
 
         @keyframes pulse {
             0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+            100% { transform: scale(1.03); }
+        }
+
+        .now-playing {
+            font-size: 1rem;
+            color: #feb47b;
+            margin-top: 5px;
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 210px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+            backdrop-filter: blur(5px);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                width: 90%;
+            }
+            
+            .visualizer {
+                gap: 2px;
+            }
+            
+            .bar {
+                width: 8px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="background-container"></div>
+    <div id="background-container" class="pulse"></div>
     
     <div class="content">
-        <h1>BeatifulMelodies2</h1>
-        <p>Hell Yeah</p>
+        <h1>Oh the melodies</h1>
+        <p>💦💦💦</p>
         
         <div class="controls">
-            <button class="play-button" id="playButton">Play Music</button>
+            <div class="song-selector">
+                <label for="songSelect"><i class="fas fa-music"></i> Select Song:</label>
+                <select id="songSelect">
+                    <option value="Patrick.mp3">Patrick-Star</option>
+                    <option value="Patrick.mp3">Patrick-Star</option>
+                    <option value="Patrick.mp3">Patrick-Star</option>
+                    <option value="Patrick.mp3">Patrick-Star</option>
+                    <option value="Patrick.mp3">Patrick-Star</option>
+                </select>
+            </div>
+            
+            <button class="play-button" id="playButton">
+                <i class="fas fa-play"></i> Play Music
+            </button>
             
             <div class="volume-control">
-                <span>Volume:</span>
+                <i class="fas fa-volume-down volume-icon"></i>
                 <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
+                <i class="fas fa-volume-up volume-icon"></i>
             </div>
         </div>
+    </div>
+    
+    <div class="song-info">
+        <div>Now Playing:</div>
+        <div class="now-playing" id="nowPlaying">Sogn</div>
+    </div>
+    
+    <div class="instructions">
+        <i class="fas fa-info-circle"></i> helleah
     </div>
     
     <div class="visualizer-container">
@@ -183,16 +307,18 @@
             // Get DOM elements
             const playButton = document.getElementById('playButton');
             const volumeSlider = document.getElementById('volumeSlider');
+            const songSelect = document.getElementById('songSelect');
             const backgroundContainer = document.getElementById('backgroundContainer');
             const visualizer = document.getElementById('visualizer');
+            const nowPlaying = document.getElementById('nowPlaying');
             
             // Create audio context and elements
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             let audioElement = new Audio();
             let sourceNode, analyser, dataArray;
             
-            // Set audio source (replace with your own MP3 file URL)
-            audioElement.src = 'Patrick.mp3';
+            // Set initial audio source
+            audioElement.src = songSelect.value;
             audioElement.crossOrigin = "anonymous";
             audioElement.loop = true;
             
@@ -200,6 +326,7 @@
             for (let i = 0; i < 64; i++) {
                 const bar = document.createElement('div');
                 bar.className = 'bar';
+                bar.style.height = '4%';
                 visualizer.appendChild(bar);
             }
             const bars = document.querySelectorAll('.bar');
@@ -232,7 +359,10 @@
                     
                     // Add color variation based on frequency
                     const hue = 20 + (percentage * 40);
-                    bars[i].style.background = `linear-gradient(to top, hsl(${hue}, 100%, 65%), hsl(${hue + 20}, 100%, 65%))`;
+                    bars[i].style.background = `linear-gradient(to top, 
+                        hsl(${hue}, 100%, 65%), 
+                        hsl(${hue + 20}, 100%, 65%),
+                        hsl(${hue + 40}, 100%, 65%))`;
                 }
                 
                 requestAnimationFrame(animateVisualizer);
@@ -247,7 +377,7 @@
                     }
                     
                     audioElement.play();
-                    playButton.textContent = 'Pause Music';
+                    playButton.innerHTML = '<i class="fas fa-pause"></i> Pause Music';
                     
                     // Start visualizer animation
                     if (!analyser) {
@@ -256,13 +386,15 @@
                     animateVisualizer();
                     
                     // Add dancing effect to background
-                    document.body.classList.add('dancing');
+                    backgroundContainer.classList.add('dancing');
+                    backgroundContainer.classList.remove('pulse');
                 } else {
                     audioElement.pause();
-                    playButton.textContent = 'Play Music';
+                    playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
                     
                     // Remove dancing effect
-                    document.body.classList.remove('dancing');
+                    backgroundContainer.classList.remove('dancing');
+                    backgroundContainer.classList.add('pulse');
                     
                     // Reset visualizer bars
                     bars.forEach(bar => {
@@ -276,15 +408,36 @@
                 audioElement.volume = volumeSlider.value / 100;
             });
             
+            // Song selection
+            songSelect.addEventListener('change', function() {
+                const wasPlaying = !audioElement.paused;
+                
+                // Pause current audio
+                audioElement.pause();
+                
+                // Change audio source
+                audioElement.src = songSelect.value;
+                nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+                
+                // Reset analyser
+                if (sourceNode) {
+                    sourceNode.disconnect();
+                    analyser.disconnect();
+                }
+                analyser = null;
+                
+                // If it was playing, start the new song
+                if (wasPlaying) {
+                    audioElement.play();
+                    setupAudioAnalysis();
+                }
+            });
+            
             // Initialize volume
             audioElement.volume = volumeSlider.value / 100;
             
-            // Add some initial pulsing effect to the background
-            setInterval(() => {
-                if (audioElement.paused) {
-                    backgroundContainer.classList.toggle('pulse');
-                }
-            }, 1000);
+            // Update now playing text when page loads
+            nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
         });
     </script>
 </body>
