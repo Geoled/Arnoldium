@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hell Yeah</title>
+    <title>The Minon</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,7 +14,7 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             color: #fff;
             overflow: hidden;
             height: 100vh;
@@ -26,6 +27,7 @@
             padding: 20px;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 10;
+            backdrop-filter: blur(10px);
         }
         
         h1 {
@@ -35,11 +37,28 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
         .subtitle {
             font-size: 1.2rem;
-            color: #aaa;
+            color: #ddd;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .grid-container {
@@ -49,19 +68,25 @@
             gap: 20px;
             flex: 1;
             padding: 20px;
-            height: calc(100vh - 150px);
+            height: calc(100vh - 200px);
         }
         
         .grid-item {
             position: relative;
             overflow: hidden;
-            border-radius: 10px;
+            border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
         
         .grid-item:hover {
-            transform: scale(1.02);
+            transform: scale(1.03);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
+        }
+        
+        .grid-item.playing {
+            box-shadow: 0 0 0 4px #ff8a00, 0 15px 40px rgba(255, 138, 0, 0.5);
         }
         
         .grid-item img {
@@ -70,6 +95,50 @@
             object-fit: cover;
             position: absolute;
             transition: transform 0.1s ease-out;
+        }
+        
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .grid-item:hover .overlay {
+            transform: translateY(0);
+        }
+        
+        .play-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .grid-item.playing .play-indicator {
+            opacity: 1;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 138, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 138, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 138, 0, 0); }
         }
         
         .grid-item:nth-child(1) {
@@ -99,10 +168,32 @@
         
         footer {
             text-align: center;
-            padding: 10px;
+            padding: 15px;
             background-color: rgba(0, 0, 0, 0.7);
             font-size: 0.9rem;
-            color: #777;
+            color: #aaa;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff8a00, #e52e71);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .audio-info {
+            font-size: 0.9rem;
+            color: #ddd;
         }
         
         @media (max-width: 768px) {
@@ -139,46 +230,141 @@
             h1 {
                 font-size: 2rem;
             }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>What have i become</h1>
-        <p class="subtitle">Move your mouse to see the parallax effect</p>
+        <h1>Music</h1>
+        <p class="subtitle">Click the images with my appearance in order to bless your ears with beautiful melodies</p>
+        <div class="controls">
+            <div class="volume-control">
+                <i class="fas fa-volume-down"></i>
+                <input type="range" id="volume" min="0" max="1" step="0.1" value="0.7">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <button id="pause-all" class="btn">
+                <i class="fas fa-pause"></i> Pause All
+            </button>
+        </div>
     </header>
     
     <div class="grid-container">
-        <div class="grid-item">
+        <div class="grid-item" data-audio="forest">
             <img src="Minon.jpg" alt="Minon">
+            <div class="play-indicator">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="overlay">
+                <span>MinonBest</span>
+                <button class="btn play-btn">
+                    <i class="fas fa-play"></i> Play
+                </button>
+            </div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" data-audio="ocean">
             <img src="Minon.jpg" alt="Minon">
+            <div class="play-indicator">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="overlay">
+                <span>MinonMid</span>
+                <button class="btn play-btn">
+                    <i class="fas fa-play"></i> Play
+                </button>
+            </div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" data-audio="rain">
             <img src="Minon.jpg" alt="Minon">
+            <div class="play-indicator">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="overlay">
+                <span>Minon Insane</span>
+                <button class="btn play-btn">
+                    <i class="fas fa-play"></i> Play
+                </button>
+            </div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" data-audio="birds">
             <img src="Minon.jpg" alt="Minon">
+            <div class="play-indicator">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="overlay">
+                <span>Minon YESSS</span>
+                <button class="btn play-btn">
+                    <i class="fas fa-play"></i> Play
+                </button>
+            </div>
         </div>
-        <div class="grid-item">
+        <div class="grid-item" data-audio="fire">
             <img src="Minon.jpg" alt="Minon">
+            <div class="play-indicator">
+                <i class="fas fa-music"></i>
+            </div>
+            <div class="overlay">
+                <span>Crack</span>
+                <button class="btn play-btn">
+                    <i class="fas fa-play"></i> Play
+                </button>
+            </div>
         </div>
     </div>
     
     <footer>
-        <p>Parallax Grid Effect | Move your mouse to interact</p>
+        <p>🤑</p>
     </footer>
+
+    <!-- Audio elements -->
+    <audio id="forest-audio" loop>
+        <source src="https://www.soundjay.com/nature/forest-ambience.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="ocean-audio" loop>
+        <source src="https://www.soundjay.com/nature/ocean-wave-2.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="rain-audio" loop>
+        <source src="https://www.soundjay.com/nature/rain-01.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="birds-audio" loop>
+        <source src="https://www.soundjay.com/nature/birds-chirping.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="fire-audio" loop>
+        <source src="https://www.soundjay.com/misc/fire-01.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const gridItems = document.querySelectorAll('.grid-item img');
+            const gridItems = document.querySelectorAll('.grid-item');
+            const gridImages = document.querySelectorAll('.grid-item img');
+            const playButtons = document.querySelectorAll('.play-btn');
+            const volumeControl = document.getElementById('volume');
+            const pauseAllButton = document.getElementById('pause-all');
             
+            // Store audio elements and their states
+            const audioElements = {
+                'forest': document.getElementById('forest-audio'),
+                'ocean': document.getElementById('ocean-audio'),
+                'rain': document.getElementById('rain-audio'),
+                'birds': document.getElementById('birds-audio'),
+                'fire': document.getElementById('fire-audio')
+            };
+            
+            // Set initial volume
+            Object.values(audioElements).forEach(audio => {
+                audio.volume = volumeControl.value;
+            });
+            
+            // Parallax effect
             document.addEventListener('mousemove', function(e) {
                 const mouseX = e.clientX / window.innerWidth;
                 const mouseY = e.clientY / window.innerHeight;
                 
-                gridItems.forEach((img, index) => {
+                gridImages.forEach((img, index) => {
                     // Different speed multipliers for each image to create depth
                     const speedX = (index + 1) * 0.02;
                     const speedY = (index + 1) * 0.02;
@@ -192,8 +378,68 @@
             
             // Reset images when mouse leaves the window
             document.addEventListener('mouseleave', function() {
-                gridItems.forEach(img => {
+                gridImages.forEach(img => {
                     img.style.transform = 'translate(0, 0) scale(1)';
+                });
+            });
+            
+            // Toggle audio playback when clicking grid items
+            gridItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const audioType = this.getAttribute('data-audio');
+                    const audio = audioElements[audioType];
+                    
+                    // If this audio is already playing, pause it
+                    if (!audio.paused) {
+                        audio.pause();
+                        this.classList.remove('playing');
+                        this.querySelector('.play-btn i').className = 'fas fa-play';
+                    } else {
+                        // Pause all other audio
+                        Object.values(audioElements).forEach(a => {
+                            a.pause();
+                        });
+                        
+                        // Remove playing class from all items
+                        gridItems.forEach(i => {
+                            i.classList.remove('playing');
+                            i.querySelector('.play-btn i').className = 'fas fa-play';
+                        });
+                        
+                        // Play this audio and add playing class
+                        audio.play();
+                        this.classList.add('playing');
+                        this.querySelector('.play-btn i').className = 'fas fa-pause';
+                    }
+                });
+            });
+            
+            // Toggle audio playback when clicking play buttons
+            playButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering the parent grid item click
+                    const gridItem = this.closest('.grid-item');
+                    gridItem.click();
+                });
+            });
+            
+            // Volume control
+            volumeControl.addEventListener('input', function() {
+                const volume = this.value;
+                Object.values(audioElements).forEach(audio => {
+                    audio.volume = volume;
+                });
+            });
+            
+            // Pause all audio
+            pauseAllButton.addEventListener('click', function() {
+                Object.values(audioElements).forEach(audio => {
+                    audio.pause();
+                });
+                
+                gridItems.forEach(item => {
+                    item.classList.remove('playing');
+                    item.querySelector('.play-btn i').className = 'fas fa-play';
                 });
             });
         });
