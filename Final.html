@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speedy Melody Player</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            overflow: hidden;
+            background-color: #000;
+            color: white;
+        }
+
+        #background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        #background-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            background: linear-gradient(to right, #ff7e5f, #feb47b, #6a11cb, #2575fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 5px rgba(255, 126, 95, 0.5)); }
+            100% { filter: drop-shadow(0 0 15px rgba(106, 17, 203, 0.5)); }
+        }
+
+        p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .song-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .song-selector label {
+            font-size: 1.1rem;
+            color: #feb47b;
+        }
+
+        #songSelect {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid #ff7e5f;
+            border-radius: 10px;
+            padding: 10px 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #songSelect:hover {
+            background: rgba(255, 126, 95, 0.2);
+        }
+
+        .play-button {
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 126, 95, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 126, 95, 0.6);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff7e5f;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.8);
+        }
+
+        .volume-icon {
+            color: #ff7e5f;
+            font-size: 1.2rem;
+        }
+
+        .visualizer-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            height: 120px;
+            gap: 4px;
+        }
+
+        .bar {
+            width: 12px;
+            background: linear-gradient(to top, #ff7e5f, #feb47b, #6a11cb, #2575fc);
+            border-radius: 6px 6px 0 0;
+            transition: height 0.1s ease;
+            box-shadow: 0 0 10px rgba(255, 126, 95, 0.5);
+        }
+
+        .dancing {
+            animation: dance 0.5s infinite alternate;
+        }
+
+        @keyframes dance {
+            0% { transform: rotate(0.5deg) scale(1.02); }
+            25% { transform: rotate(-0.5deg) scale(1.04); }
+            50% { transform: rotate(0.7deg) scale(1.01); }
+            75% { transform: rotate(-0.7deg) scale(1.03); }
+            100% { transform: rotate(0.5deg) scale(1.02); }
+        }
+
+        .song-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pulse {
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        .now-playing {
+            font-size: 1rem;
+            color: #feb47b;
+            margin-top: 5px;
+        }
+
+        .instructions {
+            position: absolute;
+            bottom: 210px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .error-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 100;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                width: 90%;
+            }
+            
+            .visualizer {
+                gap: 2px;
+            }
+            
+            .bar {
+                width: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="background-container" class="pulse">
+        <!-- Replace with your MP4 video filename -->
+        <video id="background-video" autoplay muted loop>
+            <source src="Draw.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+    
+    <div class="content">
+        <h1>Песни чтоб писюн плясал</h1>
+        <p>💨</p>
+        
+        <div class="controls">
+            <div class="song-selector">
+                <label for="songSelect"><i class="fas fa-music"></i> Select Song:</label>
+                <select id="songSelect">
+                    <!-- Replace these with your MP3 filenames -->
+                    <option value="Bird.mp3">Terence</option>
+                    <option value="Pig.mp3">Swine</option>
+                    <option value="Alone.mp3">Party</option>
+                    <option value="Horror.mp3">NO</option>
+                    <option value="Patrick.mp3">Everyday im shuffeling</option>
+                    <option value="Swinino.mp3">Building</option>
+                </select>
+            </div>
+            
+            <button class="play-button" id="playButton">
+                <i class="fas fa-play"></i> Play Music
+            </button>
+            
+            <div class="volume-control">
+                <i class="fas fa-volume-down volume-icon"></i>
+                <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
+                <i class="fas fa-volume-up volume-icon"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="song-info">
+        <div>Now Playing:</div>
+        <div class="now-playing" id="nowPlaying">My Awesome Song 1</div>
+    </div>
+    
+    <div class="instructions">
+        <i class="fas fa-info-circle"></i> best music from 2069
+    </div>
+    
+    <div class="visualizer-container">
+        <div class="visualizer" id="visualizer"></div>
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const playButton = document.getElementById('playButton');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const songSelect = document.getElementById('songSelect');
+            const backgroundContainer = document.getElementById('background-container');
+            const backgroundVideo = document.getElementById('background-video');
+            const visualizer = document.getElementById('visualizer');
+            const nowPlaying = document.getElementById('nowPlaying');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Check if all elements are found
+            if (!backgroundContainer) {
+                console.error("Background container element not found!");
+                showError("Background container element not found!");
+            }
+            
+            // Create audio context and elements
+            let audioContext;
+            let audioElement = new Audio();
+            let sourceNode, analyser, dataArray;
+            let isPlaying = false;
+            let animationId;
+            
+            // Initialize audio context on first user interaction
+            function initAudioContext() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return audioContext;
+            }
+            
+            // Set initial audio source
+            audioElement.src = songSelect.value;
+            audioElement.loop = true;
+            
+            // Create bars for visualizer
+            for (let i = 0; i < 64; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = '4%';
+                visualizer.appendChild(bar);
+            }
+            const bars = document.querySelectorAll('.bar');
+            
+            // Set up audio analysis
+            function setupAudioAnalysis() {
+                if (!audioContext) {
+                    initAudioContext();
+                }
+                
+                // Disconnect existing nodes if they exist
+                if (sourceNode) {
+                    sourceNode.disconnect();
+                }
+                
+                sourceNode = audioContext.createMediaElementSource(audioElement);
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                
+                sourceNode.connect(analyser);
+                analyser.connect(audioContext.destination);
+                
+                const bufferLength = analyser.frequencyBinCount;
+                dataArray = new Uint8Array(bufferLength);
+            }
+            
+            // Animation function for visualizer
+            function animateVisualizer() {
+                if (!analyser || !isPlaying) {
+                    cancelAnimationFrame(animationId);
+                    return;
+                }
+                
+                analyser.getByteFrequencyData(dataArray);
+                
+                for (let i = 0; i < bars.length; i++) {
+                    const value = dataArray[i];
+                    const percentage = value / 256;
+                    const height = Math.max(4, percentage * 100);
+                    
+                    bars[i].style.height = `${height}%`;
+                    
+                    // Add color variation based on frequency
+                    const hue = 20 + (percentage * 40);
+                    bars[i].style.background = `linear-gradient(to top, 
+                        hsl(${hue}, 100%, 65%), 
+                        hsl(${hue + 20}, 100%, 65%),
+                        hsl(${hue + 40}, 100%, 65%))`;
+                }
+                
+                animationId = requestAnimationFrame(animateVisualizer);
+            }
+            
+            // Show error message
+            function showError(message) {
+                if (errorMessage) {
+                    errorMessage.textContent = message;
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 5000);
+                } else {
+                    console.error("Error message element not found:", message);
+                }
+            }
+            
+            // Safely update background container classes
+            function updateBackgroundContainer(addClass, removeClass) {
+                if (backgroundContainer) {
+                    if (removeClass) backgroundContainer.classList.remove(removeClass);
+                    if (addClass) backgroundContainer.classList.add(addClass);
+                }
+            }
+            
+            // Play/pause functionality
+            playButton.addEventListener('click', async function() {
+                try {
+                    if (!isPlaying) {
+                        // Initialize audio context on first play
+                        initAudioContext();
+                        
+                        // Resume audio context if it was suspended (required by browsers)
+                        if (audioContext.state === 'suspended') {
+                            await audioContext.resume();
+                        }
+                        
+                        // Set up audio analysis if not already done
+                        if (!analyser) {
+                            setupAudioAnalysis();
+                        }
+                        
+                        // Play audio
+                        await audioElement.play();
+                        isPlaying = true;
+                        playButton.innerHTML = '<i class="fas fa-pause"></i> Pause Music';
+                        
+                        // Start visualizer animation
+                        animateVisualizer();
+                        
+                        // Add dancing effect to background
+                        updateBackgroundContainer('dancing', 'pulse');
+                    } else {
+                        // Pause audio
+                        audioElement.pause();
+                        isPlaying = false;
+                        playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
+                        
+                        // Remove dancing effect
+                        updateBackgroundContainer('pulse', 'dancing');
+                        
+                        // Stop visualizer animation
+                        cancelAnimationFrame(animationId);
+                        
+                        // Reset visualizer bars
+                        bars.forEach(bar => {
+                            bar.style.height = '4%';
+                        });
+                    }
+                } catch (error) {
+                    console.error("Audio playback error:", error);
+                    showError("Error playing audio: " + error.message);
+                }
+            });
+            
+            // Volume control
+            volumeSlider.addEventListener('input', function() {
+                audioElement.volume = volumeSlider.value / 100;
+            });
+            
+            // Song selection
+            songSelect.addEventListener('change', function() {
+                const wasPlaying = isPlaying;
+                
+                // Pause current audio
+                audioElement.pause();
+                isPlaying = false;
+                playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
+                
+                // Stop visualizer animation
+                cancelAnimationFrame(animationId);
+                
+                // Reset visualizer bars
+                bars.forEach(bar => {
+                    bar.style.height = '4%';
+                });
+                
+                // Remove dancing effect
+                updateBackgroundContainer('pulse', 'dancing');
+                
+                // Store the current time to resume from the same position if needed
+                const currentTime = audioElement.currentTime;
+                
+                // IMPORTANT: Create a completely new Audio object
+                // This fixes the issue where only the first song plays
+                const newAudio = new Audio();
+                newAudio.src = songSelect.value;
+                newAudio.loop = true;
+                newAudio.volume = audioElement.volume;
+                
+                // Replace the old audio element with the new one
+                audioElement = newAudio;
+                
+                // Update the now playing text
+                if (nowPlaying) {
+                    nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+                }
+                
+                // Reset analyser - we'll need to set it up again with the new audio
+                if (sourceNode) {
+                    sourceNode.disconnect();
+                }
+                analyser = null;
+                sourceNode = null;
+                
+                // If it was playing, start the new song
+                if (wasPlaying) {
+                    // Wait a moment for the new audio to load, then play
+                    setTimeout(() => {
+                        playButton.click(); // Trigger the play button click to start the new song
+                    }, 100);
+                }
+                
+                // Set up event listeners for the new audio element
+                audioElement.addEventListener('error', function(e) {
+                    console.error("Audio error:", e);
+                    showError("Error loading audio file. Please check the file path and format.");
+                });
+            });
+            
+            // Initialize volume
+            audioElement.volume = volumeSlider.value / 100;
+            
+            // Update now playing text when page loads
+            if (nowPlaying) {
+                nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+            }
+            
+            // Handle audio errors
+            audioElement.addEventListener('error', function(e) {
+                console.error("Audio error:", e);
+                showError("Error loading audio file. Please check the file path and format.");
+            });
+            
+            // Handle audio ending (for non-looping scenarios)
+            audioElement.addEventListener('ended', function() {
+                if (!audioElement.loop) {
+                    isPlaying = false;
+                    playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
+                    updateBackgroundContainer('pulse', 'dancing');
+                    cancelAnimationFrame(animationId);
+                    
+                    // Reset visualizer bars
+                    bars.forEach(bar => {
+                        bar.style.height = '4%';
+                    });
+                }
+            });
+            
+            // Initialize audio context on any user interaction (required by browsers)
+            document.addEventListener('click', function() {
+                initAudioContext();
+            }, { once: true });
+        });
+    </script>
+</body>
+</html>
