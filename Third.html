@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L Speed💔💔💔</title>
+    <title>Speedy melody player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -271,17 +271,19 @@
     <div id="background-container" class="pulse"></div>
     
     <div class="content">
-        <h1>Select The Melody</h1>
-        <p>S</p>
+        <h1>Melodies To Feed Your Neurons</h1>
+        <p>♎🆔⚛♊</p>
         
         <div class="controls">
             <div class="song-selector">
                 <label for="songSelect"><i class="fas fa-music"></i> Select Song:</label>
                 <select id="songSelect">
                     <!-- Replace these with your MP3 filenames -->
-                    <option value="Patrick.mp3">Patrick</option>
-                    <option value="Pig.mp3">Patrick2</option>
-                    <option value="Bird.mp3">бiрд</option>
+                    <option value="Pig.mp3">Baaaad Pig</option>
+                    <option value="Bird.mp3">Birds</option>
+                    <option value="Alone.mp3">Alone</option>
+                    <option value="Patrick.mp3">Every Day Im Shuffeling</option>
+                    <option value="The.mp3">Happy</option>
                 </select>
             </div>
             
@@ -299,11 +301,11 @@
     
     <div class="song-info">
         <div>Now Playing:</div>
-        <div class="now-playing" id="nowPlaying">My Awesome Song 1</div>
+        <div class="now-playing" id="nowPlaying">Hell Yeah</div>
     </div>
     
     <div class="instructions">
-        <i class="fas fa-info-circle"></i> ✝✝✝✝✝
+        <i class="fas fa-info-circle"></i> 💔💔💔💔💔💔
     </div>
     
     <div class="visualizer-container">
@@ -357,6 +359,7 @@
                     initAudioContext();
                 }
                 
+                // Disconnect existing nodes if they exist
                 if (sourceNode) {
                     sourceNode.disconnect();
                 }
@@ -400,13 +403,13 @@
             }
             
             // Show error message
-         //   function showError(message) {
-         //       errorMessage.textContent = message;
-         //       errorMessage.style.display = 'block';
-         //       setTimeout(() => {
-         //           errorMessage.style.display = 'none';
-         //       }, 5000);
-         //   }
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
             
             // Play/pause functionality
             playButton.addEventListener('click', async function() {
@@ -465,8 +468,8 @@
                 audioElement.volume = volumeSlider.value / 100;
             });
             
-            // Song selection
-            songSelect.addEventListener('change', async function() {
+            // Song selection - FIXED VERSION
+            songSelect.addEventListener('change', function() {
                 const wasPlaying = isPlaying;
                 
                 // Pause current audio
@@ -486,35 +489,42 @@
                 backgroundContainer.classList.remove('dancing');
                 backgroundContainer.classList.add('pulse');
                 
-                // Change audio source
-                audioElement.src = songSelect.value;
+                // Store the current time to resume from the same position if needed
+                const currentTime = audioElement.currentTime;
+                
+                // IMPORTANT: Create a completely new Audio object
+                // This fixes the issue where only the first song plays
+                const newAudio = new Audio();
+                newAudio.src = songSelect.value;
+                newAudio.loop = true;
+                newAudio.volume = audioElement.volume;
+                
+                // Replace the old audio element with the new one
+                audioElement = newAudio;
+                
+                // Update the now playing text
                 nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
                 
-                // Reset analyser for new source
+                // Reset analyser - we'll need to set it up again with the new audio
+                if (sourceNode) {
+                    sourceNode.disconnect();
+                }
                 analyser = null;
+                sourceNode = null;
                 
                 // If it was playing, start the new song
                 if (wasPlaying) {
-                    // Small delay to ensure the new source is loaded
-                    setTimeout(async () => {
-                        try {
-                            await audioElement.play();
-                            isPlaying = true;
-                            playButton.innerHTML = '<i class="fas fa-pause"></i> Pause Music';
-                            
-                            // Set up audio analysis for new source
-                            setupAudioAnalysis();
-                            animateVisualizer();
-                            
-                            // Add dancing effect
-                            backgroundContainer.classList.add('dancing');
-                            backgroundContainer.classList.remove('pulse');
-                        } catch (error) {
-                            console.error("Error playing new song:", error);
-                            showError("Error playing the selected song: " + error.message);
-                        }
+                    // Wait a moment for the new audio to load, then play
+                    setTimeout(() => {
+                        playButton.click(); // Trigger the play button click to start the new song
                     }, 100);
                 }
+                
+                // Set up event listeners for the new audio element
+                audioElement.addEventListener('error', function(e) {
+                    console.error("Audio error:", e);
+                    showError("Error loading audio file. Please check the file path and format.");
+                });
             });
             
             // Initialize volume
