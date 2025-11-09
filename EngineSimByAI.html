@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Engine Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a3a, #0d1b2a);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(25, 35, 45, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #2a3a4a;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #4fc3f7;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .subtitle {
+            color: #90a4ae;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .engine-visualization {
+            flex: 2;
+            min-width: 500px;
+            background: #1e2b38;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .engine-block {
+            width: 100%;
+            height: 300px;
+            background: #2c3e50;
+            border-radius: 10px;
+            position: relative;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding: 10px;
+        }
+
+        .cylinder {
+            width: 70px;
+            height: 250px;
+            background: #34495e;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .piston {
+            width: 60px;
+            height: 30px;
+            background: #7f8c8d;
+            border-radius: 5px;
+            position: absolute;
+            transition: top 0.1s linear;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .valve {
+            width: 15px;
+            height: 10px;
+            background: #95a5a6;
+            position: absolute;
+            border-radius: 2px;
+            transition: height 0.05s;
+        }
+
+        .intake-valve {
+            top: 10px;
+            left: 5px;
+        }
+
+        .exhaust-valve {
+            top: 10px;
+            right: 5px;
+        }
+
+        .spark {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            opacity: 0;
+            box-shadow: 0 0 10px #ff9800;
+            top: 15px;
+        }
+
+        .crankshaft {
+            width: 90%;
+            height: 20px;
+            background: #95a5a6;
+            border-radius: 10px;
+            position: absolute;
+            bottom: 10px;
+            left: 5%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .camshaft {
+            width: 90%;
+            height: 15px;
+            background: #7f8c8d;
+            border-radius: 7px;
+            position: absolute;
+            top: 10px;
+            left: 5%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .turbo {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #e74c3c;
+            border-radius: 50%;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.5);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .turbo::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px dashed white;
+            animation: spin 2s linear infinite;
+        }
+
+        .supercharger {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: #9b59b6;
+            border-radius: 50%;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.5);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .supercharger::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px dashed white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .intercooler {
+            position: absolute;
+            width: 100px;
+            height: 50px;
+            background: #3498db;
+            top: 120px;
+            right: 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.7rem;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .controls-panel {
+            flex: 1;
+            min-width: 300px;
+            background: #1e2b38;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .configuration-panel {
+            flex: 1;
+            min-width: 300px;
+            background: #1e2b38;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #4fc3f7;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #2a3a4a;
+            padding-bottom: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            background: #34495e;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .ignition.active {
+            background: #e74c3c;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.7);
+        }
+
+        .slider-container {
+            margin-bottom: 20px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #2c3e50;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .gauges {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .gauge {
+            flex: 1;
+            background: #1e2b38;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .gauge-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            margin: 10px 0;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .gauge-label {
+            color: #90a4ae;
+            font-size: 0.9rem;
+        }
+
+        .temperature-bar {
+            height: 10px;
+            background: linear-gradient(to right, #4caf50, #ffeb3b, #f44336);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .temperature-level {
+            height: 100%;
+            width: 30%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+
+        .boost-bar {
+            height: 10px;
+            background: linear-gradient(to right, #3498db, #9b59b6);
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .boost-level {
+            height: 100%;
+            width: 0%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            transition: width 0.5s;
+        }
+
+        .status-indicators {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .indicator-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #7f8c8d;
+        }
+
+        .indicator.active .indicator-light {
+            background: #2ecc71;
+            box-shadow: 0 0 10px #2ecc71;
+        }
+
+        .indicator.warning .indicator-light {
+            background: #f39c12;
+            box-shadow: 0 0 10px #f39c12;
+        }
+
+        .indicator.danger .indicator-light {
+            background: #e74c3c;
+            box-shadow: 0 0 10px #e74c3c;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .config-label {
+            margin-bottom: 5px;
+            color: #90a4ae;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            background: #2c3e50;
+            color: #e0e0e0;
+            border: 1px solid #3a4a5a;
+            outline: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #34495e;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .performance-chart {
+            background: #1e2b38;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: #4fc3f7;
+            stroke-width: 2;
+        }
+
+        .chart-area {
+            fill: rgba(79, 195, 247, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #90a4ae;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .gauges {
+                flex-direction: column;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced Engine Simulator</h1>
+            <p class="subtitle">Comprehensive Engine Simulation with Advanced Customization</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="engine-visualization">
+                <div class="engine-block" id="engine-block">
+                    <!-- Cylinders will be dynamically added here -->
+                    <div class="camshaft"></div>
+                    <div class="crankshaft"></div>
+                </div>
+                
+                <div class="turbo" id="turbo-indicator">TURBO</div>
+                <div class="supercharger" id="supercharger-indicator">SC</div>
+                <div class="intercooler" id="intercooler-indicator">INTERCOOLER</div>
+                
+                <div class="gauges">
+                    <div class="gauge">
+                        <div class="gauge-label">RPM</div>
+                        <div class="gauge-value" id="rpm-value">0</div>
+                    </div>
+                    <div class="gauge">
+                        <div class="gauge-label">Temperature</div>
+                        <div class="gauge-value" id="temp-value">85°C</div>
+                        <div class="temperature-bar">
+                            <div class="temperature-level" id="temp-level"></div>
+                        </div>
+                    </div>
+                    <div class="gauge">
+                        <div class="gauge-label">Boost</div>
+                        <div class="gauge-value" id="boost-value">0 PSI</div>
+                        <div class="boost-bar">
+                            <div class="boost-level" id="boost-level"></div>
+                        </div>
+                    </div>
+                    <div class="gauge">
+                        <div class="gauge-label">Power</div>
+                        <div class="gauge-value" id="power-value">0 HP</div>
+                        <div class="gauge-label" id="torque-value">0 lb-ft</div>
+                    </div>
+                </div>
+                
+                <div class="status-indicators">
+                    <div class="indicator" id="oil-indicator">
+                        <div class="indicator-light"></div>
+                        <span>Oil Pressure</span>
+                    </div>
+                    <div class="indicator" id="coolant-indicator">
+                        <div class="indicator-light"></div>
+                        <span>Coolant</span>
+                    </div>
+                    <div class="indicator" id="boost-indicator">
+                        <div class="indicator-light"></div>
+                        <span>Boost</span>
+                    </div>
+                    <div class="indicator" id="knock-indicator">
+                        <div class="indicator-light"></div>
+                        <span>Knock</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="configuration-panel">
+                <h2>Engine Configuration</h2>
+                <div class="config-grid">
+                    <div class="config-item">
+                        <div class="config-label">Cylinder Count</div>
+                        <select id="cylinder-count">
+                            <option value="1">1 Cylinder</option>
+                            <option value="2">2 Cylinders</option>
+                            <option value="3">3 Cylinders</option>
+                            <option value="4" selected>4 Cylinders</option>
+                            <option value="6">6 Cylinders</option>
+                            <option value="8">8 Cylinders</option>
+                            <option value="10">10 Cylinders</option>
+                            <option value="12">12 Cylinders</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Engine Layout</div>
+                        <select id="engine-layout">
+                            <option value="inline" selected>Inline</option>
+                            <option value="v">V-Type</option>
+                            <option value="boxer">Boxer</option>
+                            <option value="rotary">Rotary</option>
+                            <option value="radial">Radial</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Displacement</div>
+                        <select id="displacement">
+                            <option value="0.5">0.5L</option>
+                            <option value="1.0">1.0L</option>
+                            <option value="1.6">1.6L</option>
+                            <option value="2.0" selected>2.0L</option>
+                            <option value="3.0">3.0L</option>
+                            <option value="4.0">4.0L</option>
+                            <option value="5.0">5.0L</option>
+                            <option value="6.2">6.2L</option>
+                            <option value="8.0">8.0L</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Aspiration</div>
+                        <select id="aspiration">
+                            <option value="naturally-aspirated" selected>Naturally Aspirated</option>
+                            <option value="turbocharged">Turbocharged</option>
+                            <option value="supercharged">Supercharged</option>
+                            <option value="twin-charged">Twin-Charged</option>
+                            <option value="electric-turbo">Electric Turbo</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Fuel System</div>
+                        <select id="fuel-system">
+                            <option value="carburetor">Carburetor</option>
+                            <option value="mpfi" selected>Multi-Point Fuel Injection</option>
+                            <option value="direct-injection">Direct Injection</option>
+                            <option value="dual-injection">Dual Injection</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Compression Ratio</div>
+                        <select id="compression-ratio">
+                            <option value="8.0">8.0:1</option>
+                            <option value="9.0">9.0:1</option>
+                            <option value="10.0" selected>10.0:1</option>
+                            <option value="11.0">11.0:1</option>
+                            <option value="12.0">12.0:1</option>
+                            <option value="13.0">13.0:1</option>
+                            <option value="14.0">14.0:1</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Valvetrain</div>
+                        <select id="valvetrain">
+                            <option value="ohv">OHV (2 valves)</option>
+                            <option value="sohc">SOHC (2-3 valves)</option>
+                            <option value="dohc" selected>DOHC (4 valves)</option>
+                            <option value="multiair">MultiAir</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Fuel Type</div>
+                        <select id="fuel-type">
+                            <option value="gasoline" selected>Gasoline</option>
+                            <option value="diesel">Diesel</option>
+                            <option value="e85">E85 Ethanol</option>
+                            <option value="methanol">Methanol</option>
+                            <option value="racing">Racing Fuel</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Intercooler</div>
+                        <select id="intercooler">
+                            <option value="none" selected>None</option>
+                            <option value="air-to-air">Air-to-Air</option>
+                            <option value="water-to-air">Water-to-Air</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Cooling System</div>
+                        <select id="cooling-system">
+                            <option value="air" selected>Air Cooling</option>
+                            <option value="liquid">Liquid Cooling</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Exhaust System</div>
+                        <select id="exhaust-system">
+                            <option value="single" selected>Single Exit</option>
+                            <option value="dual">Dual Exit</option>
+                            <option value="quad">Quad Exit</option>
+                        </select>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-label">Engine Management</div>
+                        <select id="engine-management">
+                            <option value="basic" selected>Basic ECU</option>
+                            <option value="performance">Performance Tune</option>
+                            <option value="race">Race Tune</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <div class="control-group">
+                    <h2>Engine Controls</h2>
+                    <div class="button-group">
+                        <button id="start-btn" class="ignition">Start Engine</button>
+                        <button id="stop-btn" disabled>Stop Engine</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Throttle</span>
+                            <span id="throttle-value">0%</span>
+                        </div>
+                        <input type="range" id="throttle-slider" min="0" max="100" value="0" disabled>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Load</span>
+                            <span id="load-value">0%</span>
+                        </div>
+                        <input type="range" id="load-slider" min="0" max="100" value="0">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h2>Engine Parameters</h2>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Fuel Mixture</span>
+                            <span id="mixture-value">14.7:1</span>
+                        </div>
+                        <input type="range" id="mixture-slider" min="10" max="18" step="0.1" value="14.7">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Ignition Timing</span>
+                            <span id="timing-value">10° BTDC</span>
+                        </div>
+                        <input type="range" id="timing-slider" min="0" max="20" value="10">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Valve Timing</span>
+                            <span id="valve-timing-value">0°</span>
+                        </div>
+                        <input type="range" id="valve-timing-slider" min="-10" max="10" value="0">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Boost Pressure</span>
+                            <span id="boost-pressure-value">0 PSI</span>
+                        </div>
+                        <input type="range" id="boost-pressure-slider" min="0" max="40" value="0" disabled>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h2>Engine Information</h2>
+                    <div class="info-display">
+                        <p id="engine-specs">Engine Type: 4-Cylinder Inline, 2.0L</p>
+                        <p id="power-specs">Max Power: 150 HP @ 6000 RPM</p>
+                        <p id="torque-specs">Max Torque: 140 lb-ft @ 4000 RPM</p>
+                        <p id="aspiration-specs">Aspiration: Naturally Aspirated</p>
+                        <p id="efficiency-specs">Thermal Efficiency: 32%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="performance-chart">
+            <h2>Performance Curve</h2>
+            <div class="chart-container">
+                <svg id="performance-chart" width="100%" height="100%">
+                    <!-- Chart will be drawn here -->
+                </svg>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Advanced Engine Simulator | Comprehensive engine modeling with realistic physics and thermodynamics</p>
+        </footer>
+    </div>
+
+    <script>
+        // Engine state variables
+        let engineRunning = false;
+        let rpm = 0;
+        let throttle = 0;
+        let load = 0;
+        let temperature = 85;
+        let oilTemperature = 90;
+        let boost = 0;
+        let power = 0;
+        let torque = 0;
+        let fuelConsumption = 0;
+        let efficiency = 32;
+        let animationId = null;
+        let pistonPositions = [];
+        let sparkTiming = [];
+        let intakeValvePositions = [];
+        let exhaustValvePositions = [];
+        let cylinderCount = 4;
+        let engineLayout = 'inline';
+        let displacement = 2.0;
+        let aspiration = 'naturally-aspirated';
+        let fuelSystem = 'mpfi';
+        let compressionRatio = 10.0;
+        let valvetrain = 'dohc';
+        let fuelType = 'gasoline';
+        let intercooler = 'none';
+        let coolingSystem = 'air';
+        let exhaustSystem = 'single';
+        let engineManagement = 'basic';
+        
+        // Performance curve data
+        let powerCurve = [];
+        let torqueCurve = [];
+        
+        // DOM elements
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const throttleSlider = document.getElementById('throttle-slider');
+        const throttleValue = document.getElementById('throttle-value');
+        const loadSlider = document.getElementById('load-slider');
+        const loadValue = document.getElementById('load-value');
+        const rpmValue = document.getElementById('rpm-value');
+        const tempValue = document.getElementById('temp-value');
+        const tempLevel = document.getElementById('temp-level');
+        const boostValue = document.getElementById('boost-value');
+        const boostLevel = document.getElementById('boost-level');
+        const powerValue = document.getElementById('power-value');
+        const torqueValue = document.getElementById('torque-value');
+        const mixtureSlider = document.getElementById('mixture-slider');
+        const mixtureValue = document.getElementById('mixture-value');
+        const timingSlider = document.getElementById('timing-slider');
+        const timingValue = document.getElementById('timing-value');
+        const valveTimingSlider = document.getElementById('valve-timing-slider');
+        const valveTimingValue = document.getElementById('valve-timing-value');
+        const boostPressureSlider = document.getElementById('boost-pressure-slider');
+        const boostPressureValue = document.getElementById('boost-pressure-value');
+        const engineBlock = document.getElementById('engine-block');
+        const turboIndicator = document.getElementById('turbo-indicator');
+        const superchargerIndicator = document.getElementById('supercharger-indicator');
+        const intercoolerIndicator = document.getElementById('intercooler-indicator');
+        
+        // Configuration elements
+        const cylinderCountSelect = document.getElementById('cylinder-count');
+        const engineLayoutSelect = document.getElementById('engine-layout');
+        const displacementSelect = document.getElementById('displacement');
+        const aspirationSelect = document.getElementById('aspiration');
+        const fuelSystemSelect = document.getElementById('fuel-system');
+        const compressionRatioSelect = document.getElementById('compression-ratio');
+        const valvetrainSelect = document.getElementById('valvetrain');
+        const fuelTypeSelect = document.getElementById('fuel-type');
+        const intercoolerSelect = document.getElementById('intercooler');
+        const coolingSystemSelect = document.getElementById('cooling-system');
+        const exhaustSystemSelect = document.getElementById('exhaust-system');
+        const engineManagementSelect = document.getElementById('engine-management');
+        
+        // Status indicators
+        const oilIndicator = document.getElementById('oil-indicator');
+        const coolantIndicator = document.getElementById('coolant-indicator');
+        const boostIndicator = document.getElementById('boost-indicator');
+        const knockIndicator = document.getElementById('knock-indicator');
+        
+        // Info display elements
+        const engineSpecs = document.getElementById('engine-specs');
+        const powerSpecs = document.getElementById('power-specs');
+        const torqueSpecs = document.getElementById('torque-specs');
+        const aspirationSpecs = document.getElementById('aspiration-specs');
+        const efficiencySpecs = document.getElementById('efficiency-specs');
+        
+        // Performance chart
+        const performanceChart = document.getElementById('performance-chart');
+        
+        // Initialize
+        initializeEngine();
+        generatePerformanceCurve();
+        drawPerformanceChart();
+        
+        // Event listeners
+        startBtn.addEventListener('click', startEngine);
+        stopBtn.addEventListener('click', stopEngine);
+        throttleSlider.addEventListener('input', updateThrottle);
+        loadSlider.addEventListener('input', updateLoad);
+        mixtureSlider.addEventListener('input', updateMixture);
+        timingSlider.addEventListener('input', updateTiming);
+        valveTimingSlider.addEventListener('input', updateValveTiming);
+        boostPressureSlider.addEventListener('input', updateBoostPressure);
+        
+        // Configuration event listeners
+        cylinderCountSelect.addEventListener('change', updateConfiguration);
+        engineLayoutSelect.addEventListener('change', updateConfiguration);
+        displacementSelect.addEventListener('change', updateConfiguration);
+        aspirationSelect.addEventListener('change', updateConfiguration);
+        fuelSystemSelect.addEventListener('change', updateConfiguration);
+        compressionRatioSelect.addEventListener('change', updateConfiguration);
+        valvetrainSelect.addEventListener('change', updateConfiguration);
+        fuelTypeSelect.addEventListener('change', updateConfiguration);
+        intercoolerSelect.addEventListener('change', updateConfiguration);
+        coolingSystemSelect.addEventListener('change', updateConfiguration);
+        exhaustSystemSelect.addEventListener('change', updateConfiguration);
+        engineManagementSelect.addEventListener('change', updateConfiguration);
+        
+        // Engine control functions
+        function startEngine() {
+            if (engineRunning) return;
+            
+            engineRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            throttleSlider.disabled = false;
+            
+            if (aspiration === 'turbocharged' || aspiration === 'twin-charged' || aspiration === 'electric-turbo') {
+                boostPressureSlider.disabled = false;
+            }
+            
+            // Start engine animation
+            animateEngine();
+            
+            // Update status indicators
+            oilIndicator.classList.add('active');
+            coolantIndicator.classList.add('active');
+            
+            // Show forced induction indicators if applicable
+            if (aspiration === 'turbocharged' || aspiration === 'twin-charged' || aspiration === 'electric-turbo') {
+                turboIndicator.style.opacity = '1';
+                boostIndicator.classList.add('active');
+            }
+            
+            if (aspiration === 'supercharged' || aspiration === 'twin-charged') {
+                superchargerIndicator.style.opacity = '1';
+                boostIndicator.classList.add('active');
+            }
+            
+            if (intercooler !== 'none') {
+                intercoolerIndicator.style.opacity = '1';
+            }
+            
+            // Gradually increase RPM to idle
+            let targetRpm = 800;
+            let increment = 50;
+            
+            const increaseRpm = () => {
+                if (rpm < targetRpm) {
+                    rpm += increment;
+                    rpmValue.textContent = rpm;
+                    setTimeout(increaseRpm, 50);
+                }
+            };
+            
+            increaseRpm();
+        }
+        
+        function stopEngine() {
+            if (!engineRunning) return;
+            
+            engineRunning = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            throttleSlider.disabled = true;
+            boostPressureSlider.disabled = true;
+            
+            // Hide forced induction indicators
+            turboIndicator.style.opacity = '0';
+            superchargerIndicator.style.opacity = '0';
+            intercoolerIndicator.style.opacity = '0';
+            
+            // Stop animation
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            // Gradually decrease RPM to 0
+            let decrement = 100;
+            
+            const decreaseRpm = () => {
+                if (rpm > 0) {
+                    rpm = Math.max(0, rpm - decrement);
+                    rpmValue.textContent = rpm;
+                    
+                    // Reset boost
+                    boost = 0;
+                    boostValue.textContent = boost + ' PSI';
+                    boostLevel.style.width = '0%';
+                    
+                    // Reset power and torque
+                    power = 0;
+                    torque = 0;
+                    powerValue.textContent = power + ' HP';
+                    torqueValue.textContent = torque + ' lb-ft';
+                    
+                    // Slow down animation as RPM decreases
+                    updatePistons();
+                    updateValves();
+                    
+                    setTimeout(decreaseRpm, 50);
+                } else {
+                    // Reset pistons to initial position
+                    initializePistonPositions();
+                    updatePistons();
+                    updateValves();
+                    
+                    // Update status indicators
+                    oilIndicator.classList.remove('active');
+                    coolantIndicator.classList.remove('active');
+                    boostIndicator.classList.remove('active');
+                    boostIndicator.classList.remove('warning');
+                    knockIndicator.classList.remove('warning');
+                    knockIndicator.classList.remove('danger');
+                }
+            };
+            
+            decreaseRpm();
+        }
+        
+        function updateThrottle() {
+            throttle = parseInt(throttleSlider.value);
+            throttleValue.textContent = throttle + '%';
+            
+            if (engineRunning) {
+                // Calculate target RPM based on throttle and load
+                let baseRpm = 800;
+                let maxRpm = calculateMaxRpm();
+                let targetRpm = baseRpm + (throttle * (maxRpm - baseRpm) / 100);
+                
+                // Apply load effect (load reduces RPM)
+                targetRpm = targetRpm * (1 - load / 200);
+                
+                // Gradually adjust RPM
+                let diff = targetRpm - rpm;
+                let adjustment = Math.sign(diff) * Math.min(Math.abs(diff), 100);
+                
+                rpm += adjustment;
+                rpmValue.textContent = rpm;
+                
+                // Update power and torque
+                updatePowerAndTorque();
+                
+                // Update temperature based on RPM and throttle
+                updateTemperature();
+                
+                // Update boost based on RPM and throttle
+                updateBoost();
+                
+                // Check for engine knock
+                checkEngineKnock();
+            }
+        }
+        
+        function updateLoad() {
+            load = parseInt(loadSlider.value);
+            loadValue.textContent = load + '%';
+            
+            // Update throttle effect based on load
+            updateThrottle();
+        }
+        
+        function updateMixture() {
+            const mixture = parseFloat(mixtureSlider.value).toFixed(1);
+            mixtureValue.textContent = mixture + ':1';
+            
+            // Update efficiency based on mixture
+            updateEfficiency();
+        }
+        
+        function updateTiming() {
+            const timing = parseInt(timingSlider.value);
+            timingValue.textContent = timing + '° BTDC';
+            
+            // Update efficiency based on timing
+            updateEfficiency();
+            
+            // Check for engine knock
+            checkEngineKnock();
+        }
+        
+        function updateValveTiming() {
+            const valveTiming = parseInt(valveTimingSlider.value);
+            valveTimingValue.textContent = valveTiming + '°';
+            
+            // Update efficiency based on valve timing
+            updateEfficiency();
+        }
+        
+        function updateBoostPressure() {
+            const boostPressure = parseInt(boostPressureSlider.value);
+            boostPressureValue.textContent = boostPressure + ' PSI';
+            
+            // Update boost based on slider and RPM
+            updateBoost();
+            
+            // Check for engine knock
+            checkEngineKnock();
+        }
+        
+        function updateTemperature() {
+            // Temperature increases with RPM, throttle, and boost
+            let baseTemp = 85;
+            let rpmEffect = (rpm - 800) / 5200 * 40; // Up to +40°C at max RPM
+            let throttleEffect = throttle / 100 * 20; // Up to +20°C at full throttle
+            let boostEffect = boost / 40 * 25; // Up to +25°C at max boost
+            let loadEffect = load / 100 * 15; // Up to +15°C at full load
+            
+            temperature = baseTemp + rpmEffect + throttleEffect + boostEffect + loadEffect;
+            
+            // Cooling system effect
+            if (coolingSystem === 'liquid') {
+                temperature *= 0.8; // Liquid cooling is more effective
+            }
+            
+            updateTemperatureDisplay();
+            
+            // Update warning indicators
+            if (temperature > 110) {
+                coolantIndicator.classList.add('warning');
+            } else {
+                coolantIndicator.classList.remove('warning');
+            }
+            
+            if (temperature > 130) {
+                coolantIndicator.classList.remove('warning');
+                coolantIndicator.classList.add('danger');
+            }
+        }
+        
+        function updateBoost() {
+            if (aspiration === 'naturally-aspirated') {
+                boost = 0;
+            } else {
+                // Calculate boost based on RPM, throttle, and boost pressure setting
+                let baseBoost = 0;
+                
+                if (aspiration === 'turbocharged' || aspiration === 'twin-charged' || aspiration === 'electric-turbo') {
+                    // Turbo boost increases with RPM (with lag simulation)
+                    let turboRpm = Math.max(0, rpm - 1500); // Turbo doesn't spool until 1500 RPM
+                    baseBoost = (turboRpm / 3500) * parseInt(boostPressureSlider.value);
+                    
+                    // Simulate turbo lag
+                    baseBoost = baseBoost * (0.7 + 0.3 * (throttle / 100));
+                    
+                    baseBoost = Math.max(0, Math.min(parseInt(boostPressureSlider.value), baseBoost));
+                }
+                
+                if (aspiration === 'supercharged' || aspiration === 'twin-charged') {
+                    // Supercharger provides immediate boost
+                    let scBoost = throttle / 100 * 15; // Up to 15 PSI from supercharger
+                    baseBoost = Math.max(baseBoost, scBoost);
+                }
+                
+                // Electric turbo provides instant boost
+                if (aspiration === 'electric-turbo') {
+                    let electricBoost = throttle / 100 * 10; // Up to 10 PSI from electric turbo
+                    baseBoost = Math.max(baseBoost, electricBoost);
+                }
+                
+                // Apply throttle effect
+                boost = baseBoost * (throttle / 100);
+                
+                // Intercooler effect
+                if (intercooler !== 'none') {
+                    boost = boost * 1.1; // Intercooler increases boost efficiency
+                }
+                
+                // Add some randomness for realism
+                boost += (Math.random() - 0.5) * 2;
+                boost = Math.max(0, boost);
+            }
+            
+            boostValue.textContent = boost.toFixed(1) + ' PSI';
+            let boostPercent = Math.min(100, (boost / 40) * 100);
+            boostLevel.style.width = boostPercent + '%';
+            
+            // Update boost warning
+            if (boost > 30) {
+                boostIndicator.classList.add('warning');
+            } else {
+                boostIndicator.classList.remove('warning');
+            }
+        }
+        
+        function updatePowerAndTorque() {
+            // Calculate power and torque based on RPM, configuration, and boost
+            let basePower = calculateBasePower();
+            let baseTorque = calculateBaseTorque();
+            
+            // RPM effect (power and torque curves)
+            let rpmFactor = 1;
+            if (rpm < 1000) {
+                rpmFactor = rpm / 1000;
+            } else if (rpm > calculateMaxRpm() * 0.8) {
+                rpmFactor = 1 - (rpm - calculateMaxRpm() * 0.8) / (calculateMaxRpm() * 0.2);
+            }
+            
+            // Boost effect
+            let boostFactor = 1 + (boost / 14.7); // 14.7 PSI = atmospheric pressure
+            
+            // Mixture effect
+            let mixture = parseFloat(mixtureSlider.value);
+            let mixtureFactor = 1;
+            if (mixture < 12.5 || mixture > 16) {
+                mixtureFactor = 0.9; // Rich or lean mixture reduces power
+            }
+            
+            // Timing effect
+            let timing = parseInt(timingSlider.value);
+            let timingFactor = 1 + (timing - 10) * 0.01; // 1% per degree from baseline
+            
+            // Load effect
+            let loadFactor = 1 - (load / 200); // Load reduces power output
+            
+            power = basePower * rpmFactor * boostFactor * mixtureFactor * timingFactor * loadFactor;
+            torque = baseTorque * rpmFactor * boostFactor * mixtureFactor * timingFactor * loadFactor;
+            
+            powerValue.textContent = Math.round(power) + ' HP';
+            torqueValue.textContent = Math.round(torque) + ' lb-ft';
+        }
+        
+        function updateEfficiency() {
+            // Calculate thermal efficiency based on configuration and settings
+            let baseEfficiency = 32;
+            
+            // Compression ratio effect
+            let compressionEffect = (compressionRatio - 8) * 0.5; // +0.5% per point of compression
+            baseEfficiency += compressionEffect;
+            
+            // Valve timing effect
+            let valveTiming = parseInt(valveTimingSlider.value);
+            let valveEffect = Math.abs(valveTiming) * 0.1; // Small effect from valve timing
+            baseEfficiency += valveEffect;
+            
+            // Mixture effect
+            let mixture = parseFloat(mixtureSlider.value);
+            let mixtureEffect = 0;
+            if (mixture >= 14.5 && mixture <= 15) {
+                mixtureEffect = 2; // Optimal mixture range
+            }
+            baseEfficiency += mixtureEffect;
+            
+            // Engine management effect
+            let managementEffect = 0;
+            if (engineManagement === 'performance') managementEffect = 3;
+            if (engineManagement === 'race') managementEffect = 5;
+            baseEfficiency += managementEffect;
+            
+            efficiency = Math.min(45, baseEfficiency); // Cap at 45%
+            efficiencySpecs.textContent = 'Thermal Efficiency: ' + efficiency.toFixed(1) + '%';
+        }
+        
+        function checkEngineKnock() {
+            // Check for engine knock based on various factors
+            let knockProbability = 0;
+            
+            // High boost increases knock probability
+            knockProbability += boost / 40 * 30;
+            
+            // Advanced timing increases knock probability
+            let timing = parseInt(timingSlider.value);
+            knockProbability += (timing - 10) * 2;
+            
+            // High compression ratio increases knock probability
+            knockProbability += (compressionRatio - 10) * 3;
+            
+            // Low octane fuel increases knock probability
+            if (fuelType === 'gasoline') knockProbability += 5;
+            if (fuelType === 'e85') knockProbability -= 10;
+            if (fuelType === 'methanol') knockProbability -= 15;
+            if (fuelType === 'racing') knockProbability -= 20;
+            
+            // High temperature increases knock probability
+            knockProbability += (temperature - 90) / 10;
+            
+            // Random element
+            knockProbability += Math.random() * 10;
+            
+            if (knockProbability > 30) {
+                knockIndicator.classList.add('warning');
+            } else {
+                knockIndicator.classList.remove('warning');
+            }
+            
+            if (knockProbability > 50) {
+                knockIndicator.classList.remove('warning');
+                knockIndicator.classList.add('danger');
+                
+                // Severe knock reduces power
+                power *= 0.9;
+                torque *= 0.9;
+                powerValue.textContent = Math.round(power) + ' HP';
+                torqueValue.textContent = Math.round(torque) + ' lb-ft';
+            }
+        }
+        
+        function updateTemperatureDisplay() {
+            tempValue.textContent = Math.round(temperature) + '°C';
+            
+            // Update temperature bar (0-150°C range)
+            let tempPercent = Math.min(100, (temperature / 150) * 100);
+            tempLevel.style.width = tempPercent + '%';
+        }
+        
+        // Configuration functions
+        function updateConfiguration() {
+            cylinderCount = parseInt(cylinderCountSelect.value);
+            engineLayout = engineLayoutSelect.value;
+            displacement = parseFloat(displacementSelect.value);
+            aspiration = aspirationSelect.value;
+            fuelSystem = fuelSystemSelect.value;
+            compressionRatio = parseFloat(compressionRatioSelect.value);
+            valvetrain = valvetrainSelect.value;
+            fuelType = fuelTypeSelect.value;
+            intercooler = intercoolerSelect.value;
+            coolingSystem = coolingSystemSelect.value;
+            exhaustSystem = exhaustSystemSelect.value;
+            engineManagement = engineManagementSelect.value;
+            
+            // Update engine visualization
+            initializeEngine();
+            
+            // Update engine specs display
+            updateEngineSpecs();
+            
+            // Update efficiency
+            updateEfficiency();
+            
+            // Generate new performance curve
+            generatePerformanceCurve();
+            drawPerformanceChart();
+            
+            // Reset engine if running
+            if (engineRunning) {
+                stopEngine();
+            }
+        }
+        
+        function initializeEngine() {
+            // Clear existing cylinders
+            engineBlock.innerHTML = '';
+            
+            // Add camshaft and crankshaft
+            const camshaft = document.createElement('div');
+            camshaft.className = 'camshaft';
+            engineBlock.appendChild(camshaft);
+            
+            const crankshaft = document.createElement('div');
+            crankshaft.className = 'crankshaft';
+            engineBlock.appendChild(crankshaft);
+            
+            // Create cylinders based on configuration
+            for (let i = 0; i < cylinderCount; i++) {
+                const cylinder = document.createElement('div');
+                cylinder.className = 'cylinder';
+                cylinder.id = `cylinder-${i}`;
+                
+                const piston = document.createElement('div');
+                piston.className = 'piston';
+                piston.id = `piston-${i}`;
+                
+                const intakeValve = document.createElement('div');
+                intakeValve.className = 'valve intake-valve';
+                intakeValve.id = `intake-valve-${i}`;
+                
+                const exhaustValve = document.createElement('div');
+                exhaustValve.className = 'valve exhaust-valve';
+                exhaustValve.id = `exhaust-valve-${i}`;
+                
+                const spark = document.createElement('div');
+                spark.className = 'spark';
+                spark.id = `spark-${i}`;
+                
+                cylinder.appendChild(piston);
+                cylinder.appendChild(intakeValve);
+                cylinder.appendChild(exhaustValve);
+                cylinder.appendChild(spark);
+                engineBlock.appendChild(cylinder);
+            }
+            
+            // Initialize piston and valve positions
+            initializePistonPositions();
+            initializeValvePositions();
+            updatePistons();
+            updateValves();
+        }
+        
+        function initializePistonPositions() {
+            pistonPositions = [];
+            sparkTiming = [];
+            
+            // Calculate initial positions based on cylinder count
+            for (let i = 0; i < cylinderCount; i++) {
+                // Space pistons evenly in the cycle
+                pistonPositions[i] = (i * (720 / cylinderCount)) % 720;
+                sparkTiming[i] = (i * (720 / cylinderCount)) % 720;
+            }
+        }
+        
+        function initializeValvePositions() {
+            intakeValvePositions = [];
+            exhaustValvePositions = [];
+            
+            // Calculate initial valve positions based on cylinder count
+            for (let i = 0; i < cylinderCount; i++) {
+                // Valves operate at different times in the cycle
+                intakeValvePositions[i] = (i * (720 / cylinderCount) + 360) % 720;
+                exhaustValvePositions[i] = (i * (720 / cylinderCount) + 540) % 720;
+            }
+        }
+        
+        function updateEngineSpecs() {
+            // Calculate power and torque based on configuration
+            let maxPower = calculateBasePower() * 1.1; // Peak power is 10% higher than base
+            let maxTorque = calculateBaseTorque() * 1.1; // Peak torque is 10% higher than base
+            let maxRpm = calculateMaxRpm();
+            
+            // Update display
+            engineSpecs.textContent = `Engine Type: ${cylinderCount}-Cylinder ${engineLayout.charAt(0).toUpperCase() + engineLayout.slice(1)}, ${displacement}L`;
+            powerSpecs.textContent = `Max Power: ${Math.round(maxPower)} HP @ ${Math.round(maxRpm * 0.9)} RPM`;
+            torqueSpecs.textContent = `Max Torque: ${Math.round(maxTorque)} lb-ft @ ${Math.round(maxRpm * 0.6)} RPM`;
+            aspirationSpecs.textContent = `Aspiration: ${aspiration.charAt(0).toUpperCase() + aspiration.slice(1).replace('-', ' ')}`;
+        }
+        
+        function calculateBasePower() {
+            // Calculate base power based on configuration
+            let basePower = displacement * 75; // Base power calculation
+            
+            // Apply modifiers based on configuration
+            if (aspiration === 'turbocharged') basePower *= 1.4;
+            if (aspiration === 'supercharged') basePower *= 1.3;
+            if (aspiration === 'twin-charged') basePower *= 1.5;
+            if (aspiration === 'electric-turbo') basePower *= 1.35;
+            
+            if (fuelSystem === 'direct-injection') basePower *= 1.1;
+            if (fuelSystem === 'dual-injection') basePower *= 1.15;
+            
+            if (valvetrain === 'dohc') basePower *= 1.1;
+            if (valvetrain === 'multiair') basePower *= 1.15;
+            
+            if (fuelType === 'diesel') {
+                basePower *= 0.9;
+            } else if (fuelType === 'e85') {
+                basePower *= 1.05;
+            } else if (fuelType === 'methanol') {
+                basePower *= 1.1;
+            } else if (fuelType === 'racing') {
+                basePower *= 1.15;
+            }
+            
+            if (compressionRatio > 10) basePower *= 1.05;
+            if (compressionRatio > 12) basePower *= 1.05;
+            
+            if (engineManagement === 'performance') basePower *= 1.1;
+            if (engineManagement === 'race') basePower *= 1.2;
+            
+            return basePower;
+        }
+        
+        function calculateBaseTorque() {
+            // Calculate base torque based on configuration
+            let baseTorque = displacement * 75; // Base torque calculation
+            
+            // Apply modifiers based on configuration
+            if (aspiration === 'turbocharged') baseTorque *= 1.5;
+            if (aspiration === 'supercharged') baseTorque *= 1.4;
+            if (aspiration === 'twin-charged') baseTorque *= 1.6;
+            if (aspiration === 'electric-turbo') baseTorque *= 1.45;
+            
+            if (fuelType === 'diesel') baseTorque *= 1.3;
+            
+            if (engineManagement === 'performance') baseTorque *= 1.1;
+            if (engineManagement === 'race') baseTorque *= 1.15;
+            
+            return baseTorque;
+        }
+        
+        function calculateMaxRpm() {
+            // Calculate max RPM based on configuration
+            let baseRpm = 6000;
+            
+            if (fuelType === 'diesel') baseRpm = 4500;
+            if (cylinderCount === 1) baseRpm = 5000;
+            if (cylinderCount >= 6) baseRpm = 6500;
+            if (cylinderCount >= 8) baseRpm = 7000;
+            if (cylinderCount >= 10) baseRpm = 7500;
+            if (cylinderCount >= 12) baseRpm = 8000;
+            
+            if (valvetrain === 'dohc') baseRpm *= 1.1;
+            if (valvetrain === 'multiair') baseRpm *= 1.15;
+            
+            if (engineManagement === 'performance') baseRpm *= 1.05;
+            if (engineManagement === 'race') baseRpm *= 1.1;
+            
+            return baseRpm;
+        }
+        
+        function generatePerformanceCurve() {
+            powerCurve = [];
+            torqueCurve = [];
+            
+            let maxRpm = calculateMaxRpm();
+            
+            for (let r = 0; r <= maxRpm; r += 100) {
+                // Simulate typical power and torque curves
+                let power = calculateBasePower() * (r / maxRpm) * (1 - 0.3 * (r / maxRpm));
+                let torque = calculateBaseTorque() * (1 - 0.5 * (r / maxRpm));
+                
+                // Add some variation to make the curves more realistic
+                power += Math.sin(r / 500) * 10;
+                torque += Math.cos(r / 500) * 5;
+                
+                powerCurve.push({rpm: r, power: power});
+                torqueCurve.push({rpm: r, torque: torque});
+            }
+        }
+        
+        function drawPerformanceChart() {
+            // Clear existing chart
+            performanceChart.innerHTML = '';
+            
+            let maxRpm = calculateMaxRpm();
+            let maxPower = Math.max(...powerCurve.map(p => p.power));
+            let maxTorque = Math.max(...torqueCurve.map(t => t.torque));
+            let maxValue = Math.max(maxPower, maxTorque);
+            
+            let width = performanceChart.clientWidth;
+            let height = performanceChart.clientHeight;
+            
+            // Create power curve
+            let powerPath = 'M ';
+            for (let i = 0; i < powerCurve.length; i++) {
+                let x = (powerCurve[i].rpm / maxRpm) * width;
+                let y = height - (powerCurve[i].power / maxValue) * height * 0.9;
+                
+                if (i === 0) {
+                    powerPath += `${x},${y}`;
+                } else {
+                    powerPath += ` L ${x},${y}`;
+                }
+            }
+            
+            // Create torque curve
+            let torquePath = 'M ';
+            for (let i = 0; i < torqueCurve.length; i++) {
+                let x = (torqueCurve[i].rpm / maxRpm) * width;
+                let y = height - (torqueCurve[i].torque / maxValue) * height * 0.9;
+                
+                if (i === 0) {
+                    torquePath += `${x},${y}`;
+                } else {
+                    torquePath += ` L ${x},${y}`;
+                }
+            }
+            
+            // Create power area
+            let powerArea = powerPath + ` L ${width},${height} L 0,${height} Z`;
+            
+            // Draw power area
+            let areaElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            areaElement.setAttribute('d', powerArea);
+            areaElement.setAttribute('fill', 'rgba(79, 195, 247, 0.2)');
+            areaElement.setAttribute('stroke', 'none');
+            performanceChart.appendChild(areaElement);
+            
+            // Draw power curve
+            let powerElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            powerElement.setAttribute('d', powerPath);
+            powerElement.setAttribute('fill', 'none');
+            powerElement.setAttribute('stroke', '#4fc3f7');
+            powerElement.setAttribute('stroke-width', '2');
+            performanceChart.appendChild(powerElement);
+            
+            // Draw torque curve
+            let torqueElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            torqueElement.setAttribute('d', torquePath);
+            torqueElement.setAttribute('fill', 'none');
+            torqueElement.setAttribute('stroke', '#2ecc71');
+            torqueElement.setAttribute('stroke-width', '2');
+            performanceChart.appendChild(torqueElement);
+            
+            // Draw current RPM indicator
+            if (engineRunning) {
+                let indicatorX = (rpm / maxRpm) * width;
+                let indicator = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                indicator.setAttribute('x1', indicatorX);
+                indicator.setAttribute('y1', '0');
+                indicator.setAttribute('x2', indicatorX);
+                indicator.setAttribute('y2', height);
+                indicator.setAttribute('stroke', '#e74c3c');
+                indicator.setAttribute('stroke-width', '1');
+                indicator.setAttribute('stroke-dasharray', '5,5');
+                performanceChart.appendChild(indicator);
+            }
+        }
+        
+        // Animation functions
+        function animateEngine() {
+            if (!engineRunning) return;
+            
+            // Calculate movement based on RPM
+            let movement = rpm / 60; // Higher RPM = faster movement
+            
+            // Update piston positions
+            for (let i = 0; i < pistonPositions.length; i++) {
+                pistonPositions[i] = (pistonPositions[i] + movement) % 720;
+            }
+            
+            // Update valve positions (valves move at half the speed of pistons)
+            for (let i = 0; i < intakeValvePositions.length; i++) {
+                intakeValvePositions[i] = (intakeValvePositions[i] + movement / 2) % 720;
+                exhaustValvePositions[i] = (exhaustValvePositions[i] + movement / 2) % 720;
+            }
+            
+            // Update pistons, valves, and sparks
+            updatePistons();
+            updateValves();
+            updateSparks();
+            
+            // Update performance chart
+            drawPerformanceChart();
+            
+            // Continue animation
+            animationId = requestAnimationFrame(animateEngine);
+        }
+        
+        function updatePistons() {
+            for (let i = 0; i < cylinderCount; i++) {
+                const piston = document.getElementById(`piston-${i}`);
+                if (piston) {
+                    // Convert position to vertical movement (0-60px range)
+                    let position = Math.sin(pistonPositions[i] * Math.PI / 180) * 30 + 30;
+                    piston.style.top = position + 'px';
+                }
+            }
+        }
+        
+        function updateValves() {
+            for (let i = 0; i < cylinderCount; i++) {
+                const intakeValve = document.getElementById(`intake-valve-${i}`);
+                const exhaustValve = document.getElementById(`exhaust-valve-${i}`);
+                
+                if (intakeValve && exhaustValve) {
+                    // Intake valve opens around 360° (top dead center)
+                    let intakeOpen = (intakeValvePositions[i] % 360) > 340 || (intakeValvePositions[i] % 360) < 20;
+                    intakeValve.style.height = intakeOpen ? '15px' : '5px';
+                    
+                    // Exhaust valve opens around 540° (bottom dead center)
+                    let exhaustOpen = (exhaustValvePositions[i] % 360) > 160 && (exhaustValvePositions[i] % 360) < 200;
+                    exhaustValve.style.height = exhaustOpen ? '15px' : '5px';
+                }
+            }
+        }
+        
+        function updateSparks() {
+            for (let i = 0; i < cylinderCount; i++) {
+                const spark = document.getElementById(`spark-${i}`);
+                if (spark) {
+                    // Show spark when piston is near top (around 0 degrees)
+                    let sparkAngle = (pistonPositions[i] + parseInt(timingSlider.value)) % 360;
+                    
+                    if (sparkAngle < 10 || sparkAngle > 350) {
+                        spark.style.opacity = '1';
+                        
+                        // Fade out spark
+                        setTimeout(() => {
+                            spark.style.opacity = '0';
+                        }, 50);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
