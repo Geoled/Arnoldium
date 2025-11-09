@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Speedy melody player</title>
+    <title>Speedy Melody Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -271,19 +271,19 @@
     <div id="background-container" class="pulse"></div>
     
     <div class="content">
-        <h1>Melodies To Feed Your Neurons</h1>
-        <p>♎🆔⚛♊</p>
+        <h1>Песни чтоб писюн плясал</h1>
+        <p>💨</p>
         
         <div class="controls">
             <div class="song-selector">
                 <label for="songSelect"><i class="fas fa-music"></i> Select Song:</label>
                 <select id="songSelect">
                     <!-- Replace these with your MP3 filenames -->
-                    <option value="Pig.mp3">Baaaad Pig</option>
-                    <option value="Bird.mp3">Birds</option>
-                    <option value="Alone.mp3">Alone</option>
-                    <option value="Patrick.mp3">Every Day Im Shuffeling</option>
-                    <option value="The.mp3">Happy</option>
+                    <option value="Bird.mp3">Terence</option>
+                    <option value="Pig.mp3">Swine</option>
+                    <option value="Alone.mp3">Party</option>
+                    <option value="Ladeyh.mp3">LAYDEH HEAR ME TONIGHT</option>
+                    <option value="Patrick.mp3">Everyday im shuffeling</option>
                 </select>
             </div>
             
@@ -301,11 +301,11 @@
     
     <div class="song-info">
         <div>Now Playing:</div>
-        <div class="now-playing" id="nowPlaying">Hell Yeah</div>
+        <div class="now-playing" id="nowPlaying">My Awesome Song 1</div>
     </div>
     
     <div class="instructions">
-        <i class="fas fa-info-circle"></i> 💔💔💔💔💔💔
+        <i class="fas fa-info-circle"></i> best music from 2069
     </div>
     
     <div class="visualizer-container">
@@ -320,10 +320,16 @@
             const playButton = document.getElementById('playButton');
             const volumeSlider = document.getElementById('volumeSlider');
             const songSelect = document.getElementById('songSelect');
-            const backgroundContainer = document.getElementById('backgroundContainer');
+            const backgroundContainer = document.getElementById('background-container');
             const visualizer = document.getElementById('visualizer');
             const nowPlaying = document.getElementById('nowPlaying');
             const errorMessage = document.getElementById('errorMessage');
+            
+            // Check if all elements are found
+            if (!backgroundContainer) {
+                console.error("Background container element not found!");
+                showError("Background container element not found!");
+            }
             
             // Create audio context and elements
             let audioContext;
@@ -404,11 +410,23 @@
             
             // Show error message
             function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 5000);
+                if (errorMessage) {
+                    errorMessage.textContent = message;
+                    errorMessage.style.display = 'block';
+                    setTimeout(() => {
+                        errorMessage.style.display = 'none';
+                    }, 5000);
+                } else {
+                    console.error("Error message element not found:", message);
+                }
+            }
+            
+            // Safely update background container classes
+            function updateBackgroundContainer(addClass, removeClass) {
+                if (backgroundContainer) {
+                    if (removeClass) backgroundContainer.classList.remove(removeClass);
+                    if (addClass) backgroundContainer.classList.add(addClass);
+                }
             }
             
             // Play/pause functionality
@@ -437,8 +455,7 @@
                         animateVisualizer();
                         
                         // Add dancing effect to background
-                        backgroundContainer.classList.add('dancing');
-                        backgroundContainer.classList.remove('pulse');
+                        updateBackgroundContainer('dancing', 'pulse');
                     } else {
                         // Pause audio
                         audioElement.pause();
@@ -446,8 +463,7 @@
                         playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
                         
                         // Remove dancing effect
-                        backgroundContainer.classList.remove('dancing');
-                        backgroundContainer.classList.add('pulse');
+                        updateBackgroundContainer('pulse', 'dancing');
                         
                         // Stop visualizer animation
                         cancelAnimationFrame(animationId);
@@ -468,7 +484,7 @@
                 audioElement.volume = volumeSlider.value / 100;
             });
             
-            // Song selection - FIXED VERSION
+            // Song selection
             songSelect.addEventListener('change', function() {
                 const wasPlaying = isPlaying;
                 
@@ -486,8 +502,7 @@
                 });
                 
                 // Remove dancing effect
-                backgroundContainer.classList.remove('dancing');
-                backgroundContainer.classList.add('pulse');
+                updateBackgroundContainer('pulse', 'dancing');
                 
                 // Store the current time to resume from the same position if needed
                 const currentTime = audioElement.currentTime;
@@ -503,7 +518,9 @@
                 audioElement = newAudio;
                 
                 // Update the now playing text
-                nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+                if (nowPlaying) {
+                    nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+                }
                 
                 // Reset analyser - we'll need to set it up again with the new audio
                 if (sourceNode) {
@@ -531,7 +548,9 @@
             audioElement.volume = volumeSlider.value / 100;
             
             // Update now playing text when page loads
-            nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+            if (nowPlaying) {
+                nowPlaying.textContent = songSelect.options[songSelect.selectedIndex].text;
+            }
             
             // Handle audio errors
             audioElement.addEventListener('error', function(e) {
@@ -544,8 +563,7 @@
                 if (!audioElement.loop) {
                     isPlaying = false;
                     playButton.innerHTML = '<i class="fas fa-play"></i> Play Music';
-                    backgroundContainer.classList.remove('dancing');
-                    backgroundContainer.classList.add('pulse');
+                    updateBackgroundContainer('pulse', 'dancing');
                     cancelAnimationFrame(animationId);
                     
                     // Reset visualizer bars
