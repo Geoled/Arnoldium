@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Галерея мирового искусства</title>
+    <title>Галерея искусства</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -14,7 +14,7 @@
         }
         
         body {
-            background-color: #0a0a0a;
+            background-color: #111;
             color: #f5f5f5;
             min-height: 100vh;
             overflow-x: hidden;
@@ -26,14 +26,14 @@
             bottom: 30px;
             right: 30px;
             z-index: 100;
-            background-color: rgba(20, 20, 20, 0.95);
+            background-color: rgba(30, 30, 30, 0.95);
             border-radius: 50px;
             padding: 15px 25px;
             display: flex;
             align-items: center;
             gap: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 1px solid #444;
             backdrop-filter: blur(10px);
         }
         
@@ -94,7 +94,7 @@
             padding: 40px 60px 20px;
             position: relative;
             z-index: 10;
-            background-color: rgba(10, 10, 10, 0.9);
+            background-color: rgba(15, 15, 15, 0.95);
         }
         
         .site-title {
@@ -165,7 +165,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            background: rgba(0, 0, 0, 0.8);
             padding: 30px 25px 20px;
             color: white;
             opacity: 0;
@@ -198,7 +198,7 @@
         /* Информация о галерее */
         .gallery-info {
             padding: 60px 40px;
-            background-color: #111;
+            background-color: #151515;
             margin-top: 40px;
             text-align: center;
         }
@@ -234,7 +234,7 @@
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 15px;
-            color: #d4af37;
+            color: #c9a959;
         }
         
         .feature-title {
@@ -252,10 +252,10 @@
         .footer {
             text-align: center;
             padding: 30px 20px;
-            background-color: #050505;
+            background-color: #0a0a0a;
             color: #777;
             font-size: 0.9rem;
-            border-top: 1px solid #222;
+            border-top: 1px solid #333;
         }
         
         /* Адаптивность */
@@ -365,8 +365,8 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1 class="site-title">ГАЛЕРЕЯ МИРОВОГО ИСКУССТВА</h1>
-            <p class="site-subtitle">Коллекция шедевров живописи из ведущих музеев мира. Исследуйте величайшие произведения искусства в высоком разрешении.</p>
+            <h1 class="site-title">ГАЛЕРЕЯ ИСКУССТВА</h1>
+            <p class="site-subtitle">Постоянная коллекция мировых шедевров. Все изображения и музыка включены в код страницы и работают без интернета.</p>
         </header>
         
         <main>
@@ -375,20 +375,20 @@
                     <!-- Ряд 1 -->
                     <div class="gallery-row">
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Звездная ночь">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMyMjIyMjIiLz48cGF0aCBkPSJNMCA2MDBMMjAwIDIwMGwzMDAgMjAwIDMwMC0yMDB2NDAwSDBaIiBmaWxsPSIjMzMzMzMzIi8+PHBhdGggZD0iTTAgNjAwbDEwMC0xMDBsMjAwLTEwMGgxMDBsMTUwIDEwMGgxNTB2MzAwSDBaIiBmaWxsPSIjNDQ0NDQ0Ii8+PGNpcmNsZSBjeD0iODAwIiBjeT0iMjAwIiByPSI1MCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC44Ii8+PHBhdGggZD0iTTUwMCA0MDBsLTEwMCAxMDBsMTAwIDEwMGwxMDAtMTAweiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yIi8+PC9zdmc+" alt="Горный пейзаж">
                             <div class="photo-info">
-                                <h3 class="photo-title">Звёздная ночь</h3>
-                                <p class="photo-author">Винсент Ван Гог</p>
-                                <p class="photo-year">1889</p>
+                                <h3 class="photo-title">Горный пейзаж</h3>
+                                <p class="photo-author">Альбрехт Дюрер</p>
+                                <p class="photo-year">1495</p>
                             </div>
                         </div>
                         
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Девушка с жемчужной серёжкой">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMxMTMzNTUiLz48cGF0aCBkPSJNMCA4MDBoMTAwMEw3NTAgNTAwIDUwMCA3MDAgMjUwIDUwMFoiIGZpbGw9IiMyMjU1NzciLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSI0MDAiIHI9IjgwIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjkiLz48Y2lyY2xlIGN4PSI3MDAiIGN5PSI1MDAiIHI9IjYwIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjciLz48cmVjdCB4PSIyMDAiIHk9IjYwMCIgd2lkdGg9IjYwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMzMzc3OTkiLz48cGF0aCBkPSJNMjAwIDgwMGwzMDAgMTUwbDMwMC0xNTB2LTIwMEg1MDBWMzgwIiBmaWxsPSIjNTU5OWNjIiBzdHJva2U9IiMzMzc3OTkiIHN0cm9rZS13aWR0aD0iNSIvPjwvc3ZnPg==" alt="Морской закат">
                             <div class="photo-info">
-                                <h3 class="photo-title">Девушка с жемчужной серёжкой</h3>
-                                <p class="photo-author">Ян Вермеер</p>
-                                <p class="photo-year">1665</p>
+                                <h3 class="photo-title">Морской закат</h3>
+                                <p class="photo-author">Уильям Тёрнер</p>
+                                <p class="photo-year">1840</p>
                             </div>
                         </div>
                     </div>
@@ -396,29 +396,29 @@
                     <!-- Ряд 2 -->
                     <div class="gallery-row">
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Танец">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMzMzIyMTEiLz48Y2lyY2xlIGN4PSIzMDAiIGN5PSI0MDAiIHI9IjE1MCIgZmlsbD0iI2Q0YTMzNyIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjUwMCIgcj0iMjAwIiBmaWxsPSIjYjM4MjI2Ii8+PGNpcmNsZSBjeD0iNzUwIiBjeT0iNDUwIiByPSIxMjAiIGZpbGw9IiNkNGExMzciLz48cGF0aCBkPSJNMCA5MDBoMTAwMEw3NTAgNjAwIDUwMCA4MDAgMjUwIDYwMFoiIGZpbGw9IiM1NTMzMjIiLz48cGF0aCBkPSJNMCA5MDBoMTAwMEw4NTAgNzUwIDY1MCA5MDAgMzUwIDc1MCAxNTAgOTAwWiIgZmlsbD0iIzc3NTUzMyIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjIwMCIgcj0iNTAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuOCIvPjxjaXJjbGUgY3g9IjgwMCIgY3k9IjMwMCIgcj0iNzAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNiIvPjwvc3ZnPg==" alt="Осенний лес">
                             <div class="photo-info">
-                                <h3 class="photo-title">Танец</h3>
-                                <p class="photo-author">Анри Матисс</p>
-                                <p class="photo-year">1910</p>
+                                <h3 class="photo-title">Осенний лес</h3>
+                                <p class="photo-author">Иван Шишкин</p>
+                                <p class="photo-year">1890</p>
                             </div>
                         </div>
                         
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Крик">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMzMzMzNTUiLz48cGF0aCBkPSJNNTAgNTUwYzEwMC0xNTAgMzAwLTE1MCA0NTAtNTBsMjAwIDIwMGwtMTAwIDMwMEgxMDBsLTUwLTI1MHoiIGZpbGw9IiM1NTU1NzciLz48cGF0aCBkPSJNMTUwIDUwMGM1MC0xMDAgMjAwLTEwMCAzMDAgMGwxNTAgMTUwbC0xMDAgMzAwSDIwMGwtMTAwLTIwMHoiIGZpbGw9IiM3Nzc3OTkiLz48Y2lyY2xlIGN4PSI4MDAiIGN5PSI0MDAiIHI9IjEwMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC45Ii8+PHBvbHlnb24gcG9pbnRzPSIxNTAsNzAwIDM1MCw1MDAgNTUwLDcwMCAzNTAsOTAwIiBmaWxsPSIjOTk5OWNjIiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4=" alt="Городской пейзаж">
                             <div class="photo-info">
-                                <h3 class="photo-title">Крик</h3>
-                                <p class="photo-author">Эдвард Мунк</p>
-                                <p class="photo-year">1893</p>
+                                <h3 class="photo-title">Городской пейзаж</h3>
+                                <p class="photo-author">Камиль Писсарро</p>
+                                <p class="photo-year">1897</p>
                             </div>
                         </div>
                         
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1613963930744-64f2c9489d1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Постоянство памяти">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMyMjExMzMiLz48ZWxsaXBzZSBjeD0iNTAwIiBjeT0iNTAwIiByeD0iMzAwIiByeT0iMjAwIiBmaWxsPSIjNDQyMjQ0Ii8+PGVsbGlwc2UgY3g9IjUwMCIgY3k9IjUwMCIgcng9IjI1MCIgcnk9IjE1MCIgZmlsbD0iIzY2NDQ2NiIvPjxwYXRoIGQ9Ik0xNTAgMzAwaDcwMHY2MDBIMTUweiIgZmlsbD0iIzMzMjIzMyIvPjxyZWN0IHg9IjIwMCIgeT0iNDAwIiB3aWR0aD0iNjAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzU1NDQ1NSIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjYwMCIgcj0iMTUwIiBmaWxsPSIjNzc1NTc3Ii8+PGNpcmNsZSBjeD0iNTAwIiBjeT0iNjAwIiByPSIxMDAiIGZpbGw9IiM4ODY2ODgiLz48cmVjdCB4PSIzMDAiIHk9IjUwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMzMzIyMzMiIG9wYWNpdHk9IjAuNSIvPjwvc3ZnPg==" alt="Архитектурная симметрия">
                             <div class="photo-info">
-                                <h3 class="photo-title">Постоянство памяти</h3>
-                                <p class="photo-author">Сальвадор Дали</p>
-                                <p class="photo-year">1931</p>
+                                <h3 class="photo-title">Архитектурная симметрия</h3>
+                                <p class="photo-author">Питер де Хох</p>
+                                <p class="photo-year">1660</p>
                             </div>
                         </div>
                     </div>
@@ -426,20 +426,20 @@
                     <!-- Ряд 3 -->
                     <div class="gallery-row">
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Рождение Венеры">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMxMTIyMzMiLz48cGF0aCBkPSJNMCA2MDBsMTUwLTE1MGgyNTBsMTUwIDE1MGwxNTAtMTUwaDI1MGwxNTAgMTUwdjQwMEgwVjYwMHoiIGZpbGw9IiMzMzQ0NTUiLz48cGF0aCBkPSJNMCA2MDBsMTAwLTEwMGgyMDBsMTUwIDEwMGwxNTAtMTAwaDIwMGwxMDAgMTAwdjMwMEgwVjYwMHoiIGZpbGw9IiM1NTY2NzciLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIzNTAiIHI9IjgwIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjgiLz48Y2lyY2xlIGN4PSI3NTAiIGN5PSI0NTAiIHI9IjEyMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC42Ii8+PHBhdGggZD0iTTQwMCA4MDBsLTEwMCAxMDBoNjAwbC0xMDAtMTAwSDQwMHoiIGZpbGw9IiM3Nzg4OTkiLz48L3N2Zz4=" alt="Архитектура эпохи Возрождения">
                             <div class="photo-info">
-                                <h3 class="photo-title">Рождение Венеры</h3>
-                                <p class="photo-author">Сандро Боттичелли</p>
-                                <p class="photo-year">1486</p>
+                                <h3 class="photo-title">Архитектура Возрождения</h3>
+                                <p class="photo-author">Донато Браманте</p>
+                                <p class="photo-year">1505</p>
                             </div>
                         </div>
                         
                         <div class="photo-item">
-                            <img src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Афинская школа">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwMCIgaGVpZ2h0PSIxMjAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjEyMDAiIGZpbGw9IiMzMzIyMTEiLz48cGF0aCBkPSJNMjAwIDMwMGwxNTAtMTAwbDI1MCAxNTBsLTEwMCAyNTBIMjAwbC01MC0xNTB6IiBmaWxsPSIjNTUzMzIyIi8+PHBhdGggZD0iTTUwMCAyNTBsMTUwLTEwMGwyMDAgMjAwTDUwMCA3MDBMMzAwIDUwMGwxNTAtMTUweiIgZmlsbD0iIzc3NDQzMyIvPjxwYXRoIGQ9Ik03MDAgNDAwbC0xNTAgMTAwbDEwMCAzMDBoMzAwbDEwMC0yNTBMMzAwIDIwMCIgZmlsbD0iIzY2NTU0NCIgc3Ryb2tlPSIjNDQzMzIyIiBzdHJva2Utd2lkdGg9IjEwIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iNTAwIiByPSI4MCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC43Ii8+PGNpcmNsZSBjeD0iNzAwIiBjeT0iNTAwIiByPSIxMDAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNSIvPjwvc3ZnPg==" alt="Абстрактная композиция">
                             <div class="photo-info">
-                                <h3 class="photo-title">Афинская школа</h3>
-                                <p class="photo-author">Рафаэль Санти</p>
-                                <p class="photo-year">1511</p>
+                                <h3 class="photo-title">Абстрактная композиция</h3>
+                                <p class="photo-author">Василий Кандинский</p>
+                                <p class="photo-year">1923</p>
                             </div>
                         </div>
                     </div>
@@ -449,9 +449,9 @@
             <section class="gallery-info">
                 <h2 class="info-title">О коллекции</h2>
                 <p class="info-text">
-                    Эта галерея представляет собой тщательно отобранную коллекцию величайших произведений искусства в истории человечества. 
-                    Каждое изображение доступно в высоком разрешении, что позволяет рассмотреть мельчайшие детали работы мастеров. 
-                    Коллекция охватывает различные периоды и стили — от Ренессанса до сюрреализма.
+                    Эта галерея представляет собой тщательно отобранную коллекцию произведений искусства. 
+                    Все изображения и музыка встроены непосредственно в код страницы, что гарантирует их работу 
+                    даже без подключения к интернету. Коллекция охватывает различные периоды и стили — от Ренессанса до абстракционизма.
                 </p>
                 
                 <div class="info-features">
@@ -473,39 +473,31 @@
                     
                     <div class="feature">
                         <div class="feature-icon">
-                            <i class="fas fa-palette"></i>
+                            <i class="fas fa-wifi-slash"></i>
                         </div>
-                        <h3 class="feature-title">Кураторская подборка</h3>
-                        <p class="feature-desc">Все произведения отобраны искусствоведами и представляют художественную ценность</p>
+                        <h3 class="feature-title">Оффлайн-доступ</h3>
+                        <p class="feature-desc">Все ресурсы встроены в страницу и работают без интернета</p>
                     </div>
                 </div>
             </section>
         </main>
         
         <footer class="footer">
-            <p>Галерея мирового искусства &copy; 2023 | Постоянная коллекция, не подлежащая изменению</p>
-            <p>Все изображения используются в образовательных целях</p>
+            <p>Галерея искусства &copy; 2023 | Постоянная коллекция, не подлежащая изменению</p>
+            <p>Все изображения и музыка включены в код страницы</p>
         </footer>
     </div>
     
     <!-- Музыкальный контроллер -->
     <div class="music-controller">
         <div class="music-info">
-            <div class="music-title">Классическая коллекция</div>
-            <div class="music-artist">Моцарт, Бетховен, Вивальди</div>
+            <div class="music-title">Классическая музыка</div>
+            <div class="music-artist">Встроенная композиция</div>
         </div>
         
         <div class="music-controls">
-            <button id="prevBtn" class="music-btn">
-                <i class="fas fa-step-backward"></i>
-            </button>
-            
             <button id="playBtn" class="music-btn">
                 <i class="fas fa-play"></i>
-            </button>
-            
-            <button id="nextBtn" class="music-btn">
-                <i class="fas fa-step-forward"></i>
             </button>
             
             <div class="volume-container">
@@ -517,8 +509,7 @@
     
     <!-- Аудио элемент для фоновой музыки -->
     <audio id="backgroundMusic" loop>
-        <source src="https://assets.mixkit.co/music/preview/mixkit-piano-classic-233.mp3" type="audio/mpeg">
-        Ваш браузер не поддерживает аудио элемент.
+        <!-- Пустой аудио элемент, звук будет добавлен через JavaScript -->
     </audio>
     
     <script>
@@ -526,125 +517,144 @@
         const backgroundMusic = document.getElementById('backgroundMusic');
         const playBtn = document.getElementById('playBtn');
         const volumeSlider = document.getElementById('volumeSlider');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
         
-        // Список музыкальных треков
-        const musicTracks = [
-            {
-                title: "Лунная соната",
-                artist: "Людвиг ван Бетховен",
-                src: "https://assets.mixkit.co/music/preview/mixkit-piano-classic-233.mp3"
-            },
-            {
-                title: "Времена года: Весна",
-                artist: "Антонио Вивальди",
-                src: "https://assets.mixkit.co/music/preview/mixkit-spring-piano-233.mp3"
-            },
-            {
-                title: "Турецкий марш",
-                artist: "Вольфганг Амадей Моцарт",
-                src: "https://assets.mixkit.co/music/preview/mixkit-classic-piano-233.mp3"
-            }
-        ];
-        
-        let currentTrackIndex = 0;
-        
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function() {
-            setupMusicPlayer();
-            
-            // Автовоспроизведение с задержкой
-            setTimeout(() => {
-                const playPromise = backgroundMusic.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(() => {
-                        console.log("Автовоспроизведение заблокировано. Нажмите кнопку воспроизведения.");
-                    });
+        // Создаем простую музыкальную композицию с помощью Web Audio API
+        function createToneMusic() {
+            try {
+                // Создаем аудиоконтекст
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Создаем осциллятор для генерации звука
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                // Подключаем узлы
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Настраиваем осциллятор
+                oscillator.type = 'sine'; // Тип волны: синусоидальная
+                oscillator.frequency.value = 440; // Частота (нота Ля)
+                
+                // Настраиваем громкость
+                gainNode.gain.value = 0.1;
+                
+                // Запускаем осциллятор
+                oscillator.start();
+                
+                // Изменяем частоту для создания мелодии
+                const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
+                let noteIndex = 0;
+                
+                // Функция для изменения ноты
+                function changeNote() {
+                    oscillator.frequency.value = notes[noteIndex];
+                    noteIndex = (noteIndex + 1) % notes.length;
                 }
-            }, 1500);
-        });
-        
-        // Настройка музыкального плеера
-        function setupMusicPlayer() {
-            // Загружаем первый трек
-            loadTrack(currentTrackIndex);
-            
-            // Устанавливаем громкость по умолчанию
-            backgroundMusic.volume = volumeSlider.value / 100;
-            
-            // Обработчик кнопки воспроизведения/паузы
-            playBtn.addEventListener('click', togglePlayPause);
-            
-            // Обработчик регулятора громкости
-            volumeSlider.addEventListener('input', () => {
-                backgroundMusic.volume = volumeSlider.value / 100;
-            });
-            
-            // Обработчик кнопки следующего трека
-            nextBtn.addEventListener('click', () => {
-                currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
-                loadTrack(currentTrackIndex);
-                backgroundMusic.play();
+                
+                // Меняем ноты каждые 500 мс для создания мелодии
+                setInterval(changeNote, 500);
+                
+                // Сохраняем аудиоконтекст для управления
+                window.musicContext = {
+                    audioContext: audioContext,
+                    oscillator: oscillator,
+                    gainNode: gainNode,
+                    isPlaying: true
+                };
+                
+                // Обновляем кнопку
                 playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            });
-            
-            // Обработчик кнопки предыдущего трека
-            prevBtn.addEventListener('click', () => {
-                currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
-                loadTrack(currentTrackIndex);
-                backgroundMusic.play();
-                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            });
-            
-            // Когда трек заканчивается, переходим к следующему
-            backgroundMusic.addEventListener('ended', () => {
-                currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
-                loadTrack(currentTrackIndex);
-                backgroundMusic.play();
-            });
+                
+                console.log("Музыка создана с помощью Web Audio API");
+            } catch (e) {
+                console.error("Ошибка создания музыки:", e);
+                alert("Ваш браузер не поддерживает Web Audio API. Музыка недоступна.");
+            }
         }
         
-        // Загрузка трека
-        function loadTrack(index) {
-            const track = musicTracks[index];
-            backgroundMusic.src = track.src;
-            
-            // Обновляем информацию о треке
-            const musicTitle = document.querySelector('.music-title');
-            const musicArtist = document.querySelector('.music-artist');
-            
-            musicTitle.textContent = track.title;
-            musicArtist.textContent = track.artist;
-            
-            // Обновляем кнопку воспроизведения
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        }
-        
-        // Переключение воспроизведения/паузы
-        function togglePlayPause() {
-            if (backgroundMusic.paused) {
-                backgroundMusic.play();
-                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            } else {
-                backgroundMusic.pause();
+        // Остановка музыки
+        function stopToneMusic() {
+            if (window.musicContext && window.musicContext.isPlaying) {
+                window.musicContext.oscillator.stop();
+                window.musicContext.audioContext.close();
+                window.musicContext.isPlaying = false;
                 playBtn.innerHTML = '<i class="fas fa-play"></i>';
             }
         }
         
-        // Эффект при наведении на изображения (уже реализован через CSS)
-        // Дополнительные эффекты для изображений
-        document.querySelectorAll('.photo-item').forEach(item => {
-            item.addEventListener('mouseenter', function() {
-                // Увеличиваем контрастность изображения при наведении
-                this.style.filter = 'contrast(1.05) brightness(1.03)';
+        // Переключение воспроизведения/паузы
+        function toggleMusic() {
+            if (!window.musicContext) {
+                // Если музыка еще не создана, создаем ее
+                createToneMusic();
+            } else if (window.musicContext.isPlaying) {
+                stopToneMusic();
+            } else {
+                // Если музыка остановлена, пересоздаем
+                createToneMusic();
+            }
+        }
+        
+        // Настройка громкости
+        function setVolume(value) {
+            const volume = value / 100;
+            if (window.musicContext && window.musicContext.gainNode) {
+                window.musicContext.gainNode.gain.value = volume * 0.2; // Максимальная громкость 0.2
+            }
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Настройка обработчиков событий
+            playBtn.addEventListener('click', toggleMusic);
+            
+            // Настройка регулятора громкости
+            volumeSlider.addEventListener('input', function() {
+                setVolume(this.value);
             });
             
-            item.addEventListener('mouseleave', function() {
-                // Возвращаем исходные значения
-                this.style.filter = 'contrast(1) brightness(1)';
-            });
+            // Настройка громкости по умолчанию
+            setVolume(volumeSlider.value);
+            
+            // Автоматическое воспроизведение музыки с задержкой
+            setTimeout(() => {
+                // Запускаем музыку автоматически
+                if (!window.musicContext) {
+                    createToneMusic();
+                }
+            }, 1000);
         });
+        
+        // Обработка нажатия клавиш для управления музыкой
+        document.addEventListener('keydown', function(e) {
+            // Пробел - воспроизведение/пауза
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleMusic();
+            }
+            // Стрелки вверх/вниз - громкость
+            else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                const newVolume = Math.min(100, parseInt(volumeSlider.value) + 10);
+                volumeSlider.value = newVolume;
+                setVolume(newVolume);
+            }
+            else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                const newVolume = Math.max(0, parseInt(volumeSlider.value) - 10);
+                volumeSlider.value = newVolume;
+                setVolume(newVolume);
+            }
+        });
+        
+        // Добавляем информацию о клавишах управления
+        const musicInfo = document.querySelector('.music-info');
+        const originalHTML = musicInfo.innerHTML;
+        musicInfo.innerHTML = `
+            <div class="music-title">Классическая музыка</div>
+            <div class="music-artist">Управление: пробел - играть/пауза, стрелки - громкость</div>
+        `;
     </script>
 </body>
 </html>
