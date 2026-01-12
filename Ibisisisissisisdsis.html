@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея мирового искусства</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: #f5f5f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Музыкальный контроллер */
+        .music-controller {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            background-color: rgba(20, 20, 20, 0.95);
+            border-radius: 50px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+        }
+        
+        .music-info {
+            font-size: 0.9rem;
+            max-width: 200px;
+        }
+        
+        .music-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .music-artist {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .music-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .music-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Основной контейнер */
+        .container {
+            max-width: 100%;
+            padding: 0;
+        }
+        
+        /* Заголовок */
+        .header {
+            padding: 40px 60px 20px;
+            position: relative;
+            z-index: 10;
+            background-color: rgba(10, 10, 10, 0.9);
+        }
+        
+        .site-title {
+            font-size: 3.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: normal;
+            color: #e8e8e8;
+            text-align: center;
+        }
+        
+        .site-subtitle {
+            font-size: 1.3rem;
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        /* Галерея */
+        .gallery-container {
+            padding: 0 20px 80px;
+        }
+        
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .gallery-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+            min-height: 70vh;
+        }
+        
+        /* Размеры изображений в галерее */
+        .photo-item {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .photo-item:hover {
+            flex: 1.2;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.8s ease;
+        }
+        
+        .photo-item:hover img {
+            transform: scale(1.03);
+        }
+        
+        .photo-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 30px 25px 20px;
+            color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .photo-item:hover .photo-info {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .photo-title {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .photo-author {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .photo-year {
+            font-size: 1rem;
+            color: #aaa;
+        }
+        
+        /* Информация о галерее */
+        .gallery-info {
+            padding: 60px 40px;
+            background-color: #111;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .info-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+            font-weight: normal;
+        }
+        
+        .info-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #bbb;
+            max-width: 900px;
+            margin: 0 auto 30px;
+        }
+        
+        .info-features {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            text-align: center;
+            max-width: 200px;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #d4af37;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #e8e8e8;
+        }
+        
+        .feature-desc {
+            color: #aaa;
+            line-height: 1.6;
+        }
+        
+        /* Футер */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #050505;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #222;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .gallery-row {
+                min-height: 60vh;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .site-title {
+                font-size: 2.8rem;
+            }
+            
+            .gallery-row {
+                min-height: 50vh;
+            }
+            
+            .photo-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px 15px;
+            }
+            
+            .site-title {
+                font-size: 2.2rem;
+            }
+            
+            .site-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .gallery-row {
+                flex-direction: column;
+                min-height: auto;
+                gap: 5px;
+                margin-bottom: 5px;
+            }
+            
+            .photo-item {
+                height: 70vh;
+            }
+            
+            .photo-item:hover {
+                flex: 1;
+            }
+            
+            .music-controller {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                justify-content: space-between;
+            }
+            
+            .info-features {
+                gap: 30px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .site-title {
+                font-size: 1.8rem;
+            }
+            
+            .photo-item {
+                height: 60vh;
+            }
+            
+            .music-controller {
+                flex-direction: column;
+                gap: 15px;
+                border-radius: 20px;
+                padding: 20px;
+            }
+            
+            .music-info, .music-controls {
+                width: 100%;
+            }
+            
+            .gallery-info {
+                padding: 40px 20px;
+            }
+        }
+        
+        /* Анимации */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .photo-item {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .photo-item:nth-child(1) { animation-delay: 0.1s; }
+        .photo-item:nth-child(2) { animation-delay: 0.2s; }
+        .photo-item:nth-child(3) { animation-delay: 0.3s; }
+        .photo-item:nth-child(4) { animation-delay: 0.4s; }
+        .photo-item:nth-child(5) { animation-delay: 0.5s; }
+        .photo-item:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="site-title">ГАЛЕРЕЯ МИРОВОГО ИСКУССТВА</h1>
+            <p class="site-subtitle">Коллекция шедевров живописи из ведущих музеев мира. Исследуйте величайшие произведения искусства в высоком разрешении.</p>
+        </header>
+        
+        <main>
+            <div class="gallery-container">
+                <div class="gallery">
+                    <!-- Ряд 1 -->
+                    <div class="gallery-row">
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Звездная ночь">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Звёздная ночь</h3>
+                                <p class="photo-author">Винсент Ван Гог</p>
+                                <p class="photo-year">1889</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1541961017774-22349e4a1262?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Девушка с жемчужной серёжкой">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Девушка с жемчужной серёжкой</h3>
+                                <p class="photo-author">Ян Вермеер</p>
+                                <p class="photo-year">1665</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ряд 2 -->
+                    <div class="gallery-row">
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1578301978693-85fa9c0320b9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Танец">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Танец</h3>
+                                <p class="photo-author">Анри Матисс</p>
+                                <p class="photo-year">1910</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1542204165-65bf26472b9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Крик">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Крик</h3>
+                                <p class="photo-author">Эдвард Мунк</p>
+                                <p class="photo-year">1893</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1613963930744-64f2c9489d1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Постоянство памяти">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Постоянство памяти</h3>
+                                <p class="photo-author">Сальвадор Дали</p>
+                                <p class="photo-year">1931</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ряд 3 -->
+                    <div class="gallery-row">
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Рождение Венеры">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Рождение Венеры</h3>
+                                <p class="photo-author">Сандро Боттичелли</p>
+                                <p class="photo-year">1486</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-item">
+                            <img src="https://images.unsplash.com/photo-1578301978018-3005759f48f7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80" alt="Афинская школа">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Афинская школа</h3>
+                                <p class="photo-author">Рафаэль Санти</p>
+                                <p class="photo-year">1511</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="gallery-info">
+                <h2 class="info-title">О коллекции</h2>
+                <p class="info-text">
+                    Эта галерея представляет собой тщательно отобранную коллекцию величайших произведений искусства в истории человечества. 
+                    Каждое изображение доступно в высоком разрешении, что позволяет рассмотреть мельчайшие детали работы мастеров. 
+                    Коллекция охватывает различные периоды и стили — от Ренессанса до сюрреализма.
+                </p>
+                
+                <div class="info-features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-expand-alt"></i>
+                        </div>
+                        <h3 class="feature-title">Полный экран</h3>
+                        <p class="feature-desc">Изображения занимают максимальное пространство экрана для полного погружения</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h3 class="feature-title">Фоновая музыка</h3>
+                        <p class="feature-desc">Классическая музыка создает атмосферу для созерцания искусства</p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3 class="feature-title">Кураторская подборка</h3>
+                        <p class="feature-desc">Все произведения отобраны искусствоведами и представляют художественную ценность</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p>Галерея мирового искусства &copy; 2023 | Постоянная коллекция, не подлежащая изменению</p>
+            <p>Все изображения используются в образовательных целях</p>
+        </footer>
+    </div>
+    
+    <!-- Музыкальный контроллер -->
+    <div class="music-controller">
+        <div class="music-info">
+            <div class="music-title">Классическая коллекция</div>
+            <div class="music-artist">Моцарт, Бетховен, Вивальди</div>
+        </div>
+        
+        <div class="music-controls">
+            <button id="prevBtn" class="music-btn">
+                <i class="fas fa-step-backward"></i>
+            </button>
+            
+            <button id="playBtn" class="music-btn">
+                <i class="fas fa-play"></i>
+            </button>
+            
+            <button id="nextBtn" class="music-btn">
+                <i class="fas fa-step-forward"></i>
+            </button>
+            
+            <div class="volume-container">
+                <i class="fas fa-volume-up"></i>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Аудио элемент для фоновой музыки -->
+    <audio id="backgroundMusic" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-piano-classic-233.mp3" type="audio/mpeg">
+        Ваш браузер не поддерживает аудио элемент.
+    </audio>
+    
+    <script>
+        // Элементы DOM
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        // Список музыкальных треков
+        const musicTracks = [
+            {
+                title: "Лунная соната",
+                artist: "Людвиг ван Бетховен",
+                src: "https://assets.mixkit.co/music/preview/mixkit-piano-classic-233.mp3"
+            },
+            {
+                title: "Времена года: Весна",
+                artist: "Антонио Вивальди",
+                src: "https://assets.mixkit.co/music/preview/mixkit-spring-piano-233.mp3"
+            },
+            {
+                title: "Турецкий марш",
+                artist: "Вольфганг Амадей Моцарт",
+                src: "https://assets.mixkit.co/music/preview/mixkit-classic-piano-233.mp3"
+            }
+        ];
+        
+        let currentTrackIndex = 0;
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            setupMusicPlayer();
+            
+            // Автовоспроизведение с задержкой
+            setTimeout(() => {
+                const playPromise = backgroundMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        console.log("Автовоспроизведение заблокировано. Нажмите кнопку воспроизведения.");
+                    });
+                }
+            }, 1500);
+        });
+        
+        // Настройка музыкального плеера
+        function setupMusicPlayer() {
+            // Загружаем первый трек
+            loadTrack(currentTrackIndex);
+            
+            // Устанавливаем громкость по умолчанию
+            backgroundMusic.volume = volumeSlider.value / 100;
+            
+            // Обработчик кнопки воспроизведения/паузы
+            playBtn.addEventListener('click', togglePlayPause);
+            
+            // Обработчик регулятора громкости
+            volumeSlider.addEventListener('input', () => {
+                backgroundMusic.volume = volumeSlider.value / 100;
+            });
+            
+            // Обработчик кнопки следующего трека
+            nextBtn.addEventListener('click', () => {
+                currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+                loadTrack(currentTrackIndex);
+                backgroundMusic.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            });
+            
+            // Обработчик кнопки предыдущего трека
+            prevBtn.addEventListener('click', () => {
+                currentTrackIndex = (currentTrackIndex - 1 + musicTracks.length) % musicTracks.length;
+                loadTrack(currentTrackIndex);
+                backgroundMusic.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            });
+            
+            // Когда трек заканчивается, переходим к следующему
+            backgroundMusic.addEventListener('ended', () => {
+                currentTrackIndex = (currentTrackIndex + 1) % musicTracks.length;
+                loadTrack(currentTrackIndex);
+                backgroundMusic.play();
+            });
+        }
+        
+        // Загрузка трека
+        function loadTrack(index) {
+            const track = musicTracks[index];
+            backgroundMusic.src = track.src;
+            
+            // Обновляем информацию о треке
+            const musicTitle = document.querySelector('.music-title');
+            const musicArtist = document.querySelector('.music-artist');
+            
+            musicTitle.textContent = track.title;
+            musicArtist.textContent = track.artist;
+            
+            // Обновляем кнопку воспроизведения
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        }
+        
+        // Переключение воспроизведения/паузы
+        function togglePlayPause() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                backgroundMusic.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+        
+        // Эффект при наведении на изображения (уже реализован через CSS)
+        // Дополнительные эффекты для изображений
+        document.querySelectorAll('.photo-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                // Увеличиваем контрастность изображения при наведении
+                this.style.filter = 'contrast(1.05) brightness(1.03)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                // Возвращаем исходные значения
+                this.style.filter = 'contrast(1) brightness(1)';
+            });
+        });
+    </script>
+</body>
+</html>
