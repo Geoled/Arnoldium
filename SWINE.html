@@ -1,1 +1,655 @@
-
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя фото-галерея с музыкой</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #f1f1f1;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #7b4397, #dc2430);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b8b8b8;
+            margin-bottom: 30px;
+        }
+        
+        /* Стили для музыкального плеера */
+        .music-player {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px auto 30px;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .music-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .music-cover {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: linear-gradient(to right, #7b4397, #dc2430);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .music-text h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .music-text p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .music-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Стили для загрузки фотографий */
+        .upload-section {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+        
+        .upload-section:hover {
+            border-color: rgba(123, 67, 151, 0.6);
+        }
+        
+        .upload-label {
+            display: block;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .upload-label:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #7b4397;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        /* Стили для галереи */
+        .gallery-section {
+            margin-top: 20px;
+        }
+        
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gallery-title {
+            font-size: 1.8rem;
+        }
+        
+        .photo-count {
+            background: rgba(123, 67, 151, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .photo-card {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .photo-info {
+            padding: 15px;
+        }
+        
+        .photo-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .photo-date {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(220, 36, 48, 0.8);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        
+        .photo-card:hover .delete-btn {
+            opacity: 1;
+        }
+        
+        .delete-btn:hover {
+            background: rgba(220, 36, 48, 1);
+            transform: scale(1.1);
+        }
+        
+        .empty-gallery {
+            text-align: center;
+            padding: 50px 20px;
+            color: #aaa;
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+        
+        .empty-gallery i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .music-player {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+            
+            .music-info, .music-controls {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .upload-section {
+                padding: 20px 15px;
+            }
+        }
+        
+        /* Анимация появления фотографий */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .photo-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-camera-retro"></i> Моя фото-галерея</h1>
+            <p class="subtitle">Добавляйте свои фотографии и наслаждайтесь музыкой</p>
+        </header>
+        
+        <div class="music-player">
+            <div class="music-info">
+                <div class="music-cover">
+                    <i class="fas fa-music"></i>
+                </div>
+                <div class="music-text">
+                    <h3>Фоновая музыка</h3>
+                    <p>Расслабляющая мелодия</p>
+                </div>
+            </div>
+            
+            <div class="music-controls">
+                <button id="playBtn" class="music-btn">
+                    <i class="fas fa-play"></i>
+                </button>
+                
+                <div class="volume-container">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                </div>
+            </div>
+        </div>
+        
+        <section class="upload-section">
+            <label for="fileInput" class="upload-label">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">Добавить фотографии</div>
+                <div class="upload-hint">Нажмите или перетащите файлы сюда (JPG, PNG, GIF)</div>
+                <button class="music-btn" style="width: auto; padding: 8px 20px; border-radius: 25px;">
+                    <i class="fas fa-folder-open"></i> Выбрать файлы
+                </button>
+            </label>
+            <input type="file" id="fileInput" accept="image/*" multiple>
+        </section>
+        
+        <section class="gallery-section">
+            <div class="gallery-header">
+                <h2 class="gallery-title">Мои фотографии</h2>
+                <div class="photo-count">Фото: <span id="count">0</span></div>
+            </div>
+            
+            <div class="gallery" id="photoGallery">
+                <!-- Фотографии будут добавляться здесь -->
+                <div class="empty-gallery">
+                    <i class="far fa-images"></i>
+                    <p>Ваша галерея пуста. Добавьте фотографии, нажав кнопку выше.</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>Галерея с фоновой музыкой &copy; 2023 | Фотографии хранятся только в вашем браузере</p>
+        </footer>
+    </div>
+    
+    <!-- Аудио элемент для фоновой музыки -->
+    <audio id="backgroundMusic" loop>
+        <!-- Добавим несколько вариантов музыки для примера -->
+        <source src="https://assets.mixkit.co/music/preview/mixkit-driving-ambition-32.mp3" type="audio/mpeg">
+        Ваш браузер не поддерживает аудио элемент.
+    </audio>
+    
+    <script>
+        // Элементы DOM
+        const fileInput = document.getElementById('fileInput');
+        const photoGallery = document.getElementById('photoGallery');
+        const countElement = document.getElementById('count');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        
+        // Состояние галереи (загружаем из localStorage)
+        let gallery = JSON.parse(localStorage.getItem('photoGallery')) || [];
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            updateGallery();
+            setupEventListeners();
+            setupMusicPlayer();
+        });
+        
+        // Настройка обработчиков событий
+        function setupEventListeners() {
+            // Обработка выбора файлов
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Drag and drop для загрузки файлов
+            const uploadSection = document.querySelector('.upload-section');
+            uploadSection.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadSection.style.borderColor = 'rgba(123, 67, 151, 0.8)';
+                uploadSection.style.background = 'rgba(123, 67, 151, 0.1)';
+            });
+            
+            uploadSection.addEventListener('dragleave', () => {
+                uploadSection.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                uploadSection.style.background = '';
+            });
+            
+            uploadSection.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadSection.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                uploadSection.style.background = '';
+                
+                if (e.dataTransfer.files.length) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+        }
+        
+        // Настройка музыкального плеера
+        function setupMusicPlayer() {
+            // Устанавливаем громкость по умолчанию
+            backgroundMusic.volume = volumeSlider.value / 100;
+            
+            // Обработчик кнопки воспроизведения/паузы
+            playBtn.addEventListener('click', () => {
+                if (backgroundMusic.paused) {
+                    backgroundMusic.play();
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    backgroundMusic.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+            
+            // Обработчик регулятора громкости
+            volumeSlider.addEventListener('input', () => {
+                backgroundMusic.volume = volumeSlider.value / 100;
+            });
+            
+            // Автовоспроизведение с задержкой для лучшего UX
+            setTimeout(() => {
+                // Пытаемся воспроизвести музыку, но только если пользователь уже взаимодействовал со страницей
+                const playPromise = backgroundMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        // Автовоспроизведение заблокировано браузером
+                        console.log("Автовоспроизведение заблокировано. Нажмите кнопку воспроизведения.");
+                    });
+                }
+            }, 1000);
+        }
+        
+        // Обработка выбора файлов
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+        
+        // Обработка загруженных файлов
+        function handleFiles(files) {
+            // Очищаем сообщение о пустой галерее, если это первая загрузка
+            const emptyMsg = photoGallery.querySelector('.empty-gallery');
+            if (emptyMsg) {
+                emptyMsg.remove();
+            }
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Проверяем, что это изображение
+                if (!file.type.match('image.*')) {
+                    alert('Файл ' + file.name + ' не является изображением. Пожалуйста, выберите файлы с расширением JPG, PNG или GIF.');
+                    continue;
+                }
+                
+                // Проверяем размер файла (максимум 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Файл ' + file.name + ' слишком большой. Максимальный размер файла - 5MB.');
+                    continue;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Создаем объект фотографии
+                    const photo = {
+                        id: Date.now() + i, // Уникальный ID
+                        name: file.name,
+                        date: new Date().toLocaleDateString('ru-RU'),
+                        dataUrl: e.target.result
+                    };
+                    
+                    // Добавляем фотографию в галерею
+                    gallery.push(photo);
+                    
+                    // Сохраняем в localStorage
+                    saveGallery();
+                    
+                    // Обновляем отображение галереи
+                    updateGallery();
+                };
+                
+                reader.readAsDataURL(file);
+            }
+            
+            // Сбрасываем input, чтобы можно было загружать те же файлы повторно
+            fileInput.value = '';
+        }
+        
+        // Обновление отображения галереи
+        function updateGallery() {
+            // Очищаем галерею
+            photoGallery.innerHTML = '';
+            
+            // Обновляем счетчик
+            countElement.textContent = gallery.length;
+            
+            // Если галерея пуста, показываем сообщение
+            if (gallery.length === 0) {
+                photoGallery.innerHTML = `
+                    <div class="empty-gallery">
+                        <i class="far fa-images"></i>
+                        <p>Ваша галерея пуста. Добавьте фотографии, нажав кнопку выше.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Добавляем все фотографии
+            gallery.forEach(photo => {
+                const photoCard = document.createElement('div');
+                photoCard.className = 'photo-card';
+                photoCard.innerHTML = `
+                    <img src="${photo.dataUrl}" alt="${photo.name}">
+                    <div class="photo-info">
+                        <div class="photo-name">${photo.name}</div>
+                        <div class="photo-date">Добавлено: ${photo.date}</div>
+                    </div>
+                    <button class="delete-btn" data-id="${photo.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                
+                photoGallery.appendChild(photoCard);
+            });
+            
+            // Добавляем обработчики для кнопок удаления
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    deletePhoto(id);
+                });
+            });
+        }
+        
+        // Удаление фотографии
+        function deletePhoto(id) {
+            if (confirm('Вы уверены, что хотите удалить эту фотографию?')) {
+                gallery = gallery.filter(photo => photo.id !== id);
+                saveGallery();
+                updateGallery();
+            }
+        }
+        
+        // Сохранение галереи в localStorage
+        function saveGallery() {
+            localStorage.setItem('photoGallery', JSON.stringify(gallery));
+        }
+        
+        // Предзагрузка нескольких примеров изображений (для демонстрации)
+        function loadSampleImages() {
+            // Проверяем, есть ли уже фотографии в галерее
+            if (gallery.length === 0) {
+                // Создаем массив с URL примеров изображений
+                const sampleImages = [
+                    {
+                        name: "Горы",
+                        date: new Date().toLocaleDateString('ru-RU'),
+                        dataUrl: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzBhNTQ3NCIvPjxwYXRoIGQ9Ik0wIDE1MEw3NSA1MGwxMjUgNTBsMTAwLTUwdjUwSDBaIiBmaWxsPSIjMWI4NmM4Ii8+PHBhdGggZD0iTTAgMTUwbDM3LjUtMjVsNjIuNS0yNWg1MGw1MCAyNWg1MHY1MEgwWiIgZmlsbD0iIzJiOWVkNSIvPjxjaXJjbGUgY3g9IjI1MCIgY3k9IjUwIiByPSIyMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC43Ii8+PC9zdmc+"
+                    },
+                    {
+                        name: "Пляж",
+                        date: new Date().toLocaleDateString('ru-RU'),
+                        dataUrl: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzM5YzZmNSIvPjxyZWN0IHk9IjEyMCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI4MCIgZmlsbD0iI2ZmZTQ3NCIvPjxwYXRoIGQ9Ik0wIDEyMGgzMDBMMjUwIDgwIDE1MCAxMDAgNTAgNzBaIiBmaWxsPSIjZjk4YzI5Ii8+PGNpcmNsZSBjeD0iNTAiIGN5PSI2MCIgcj0iMTUiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuOCIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjcwIiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC42Ii8+PC9zdmc+"
+                    },
+                    {
+                        name: "Лес",
+                        date: new Date().toLocaleDateString('ru-RU'),
+                        dataUrl: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzI1NzM0OSIvPjxjaXJjbGUgY3g9IjUwIiBjeT0iODAiIHI9IjQwIiBmaWxsPSIjMmE4NTQ5Ii8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iNjAiIHI9IjUwIiBmaWxsPSIjMjE3MzQ5Ii8+PGNpcmNsZSBjeD0iMjUwIiBjeT0iODAiIHI9IjQwIiBmaWxsPSIjMmE4NTQ5Ii8+PHBhdGggZD0iTTAgMTQwaDMwMEwxNTAgMTYwIDAgMTQwWiIgZmlsbD0iIzE1NWMzMCIvPjxwYXRoIGQ9Ik0wIDE0MGgzMDBMMjUwIDE2MCAxNTAgMTgwIDUwIDE2MFoiIGZpbGw9IiMxYzZkMzEiLz48L3N2Zz4="
+                    }
+                ];
+                
+                // Добавляем примеры в галерею
+                sampleImages.forEach((img, index) => {
+                    const photo = {
+                        id: Date.now() + index,
+                        name: img.name,
+                        date: img.date,
+                        dataUrl: img.dataUrl
+                    };
+                    
+                    gallery.push(photo);
+                });
+                
+                saveGallery();
+                updateGallery();
+            }
+        }
+        
+        // Загружаем примеры изображений при загрузке страницы (для демонстрации)
+        // В реальном приложении эту функцию можно удалить или вызвать по кнопке
+        setTimeout(loadSampleImages, 500);
+    </script>
+</body>
+</html>
