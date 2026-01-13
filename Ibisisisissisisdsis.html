@@ -476,7 +476,7 @@
     
     <!-- Аудио элемент для фоновой музыки -->
     <audio id="backgroundMusic" loop>
-        <!-- Пустой аудио элемент, звук будет добавлен через JavaScript -->
+        <src="SwinMusic.mp3">
     </audio>
     
     <script>
@@ -486,60 +486,7 @@
         const volumeSlider = document.getElementById('volumeSlider');
         
         // Создаем простую музыкальную композицию с помощью Web Audio API
-        function createToneMusic() {
-            try {
-                // Создаем аудиоконтекст
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Создаем осциллятор для генерации звука
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                // Подключаем узлы
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Настраиваем осциллятор
-                oscillator.type = 'sine'; // Тип волны: синусоидальная
-                oscillator.frequency.value = 440; // Частота (нота Ля)
-                
-                // Настраиваем громкость
-                gainNode.gain.value = 0.1;
-                
-                // Запускаем осциллятор
-                oscillator.start();
-                
-                // Изменяем частоту для создания мелодии
-                const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25];
-                let noteIndex = 0;
-                
-                // Функция для изменения ноты
-                function changeNote() {
-                    oscillator.frequency.value = notes[noteIndex];
-                    noteIndex = (noteIndex + 1) % notes.length;
-                }
-                
-                // Меняем ноты каждые 500 мс для создания мелодии
-                setInterval(changeNote, 500);
-                
-                // Сохраняем аудиоконтекст для управления
-                window.musicContext = {
-                    audioContext: audioContext,
-                    oscillator: oscillator,
-                    gainNode: gainNode,
-                    isPlaying: true
-                };
-                
-                // Обновляем кнопку
-                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                
-                console.log("Музыка создана с помощью Web Audio API");
-            } catch (e) {
-                console.error("Ошибка создания музыки:", e);
-                alert("Ваш браузер не поддерживает Web Audio API. Музыка недоступна.");
-            }
-        }
-        
+     
         // Остановка музыки
         function stopToneMusic() {
             if (window.musicContext && window.musicContext.isPlaying) {
