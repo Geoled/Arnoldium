@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W gallery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', 'Times New Roman', serif;
+        }
+        
+        body {
+            background-color: #111;
+            color: #f5f5f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Музыкальный контроллер */
+        .music-controller {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            background-color: rgba(30, 30, 30, 0.95);
+            border-radius: 50px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 1px solid #444;
+            backdrop-filter: blur(10px);
+        }
+        
+        .music-info {
+            font-size: 0.9rem;
+            max-width: 200px;
+        }
+        
+        .music-title {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .music-artist {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .music-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .music-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Основной контейнер */
+        .container {
+            max-width: 100%;
+            padding: 0;
+        }
+        
+        /* Заголовок */
+        .header {
+            padding: 40px 60px 20px;
+            position: relative;
+            z-index: 10;
+            background-color: rgba(15, 15, 15, 0.95);
+        }
+        
+        .site-title {
+            font-size: 3.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: normal;
+            color: #e8e8e8;
+            text-align: center;
+        }
+        
+        .site-subtitle {
+            font-size: 1.3rem;
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        /* Галерея */
+        .gallery-container {
+            padding: 0 20px 80px;
+        }
+        
+        .gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .gallery-row {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+            min-height: 70vh;
+        }
+        
+        /* Размеры изображений в галерее */
+        .photo-item {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        
+        .photo-item:hover {
+            flex: 1.2;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.8s ease;
+        }
+        
+        .photo-item:hover img {
+            transform: scale(1.03);
+        }
+        
+        .photo-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 30px 25px 20px;
+            color: white;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+        
+        .photo-item:hover .photo-info {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .photo-title {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .photo-author {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .photo-year {
+            font-size: 1rem;
+            color: #aaa;
+        }
+        
+        /* Информация о галерее */
+        .gallery-info {
+            padding: 60px 40px;
+            background-color: #151515;
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .info-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #e8e8e8;
+            font-weight: normal;
+        }
+        
+        .info-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #bbb;
+            max-width: 900px;
+            margin: 0 auto 30px;
+        }
+        
+        .info-features {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .feature {
+            text-align: center;
+            max-width: 200px;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #c9a959;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #e8e8e8;
+        }
+        
+        .feature-desc {
+            color: #aaa;
+            line-height: 1.6;
+        }
+        
+        /* Футер */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            background-color: #0a0a0a;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1200px) {
+            .gallery-row {
+                min-height: 60vh;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .site-title {
+                font-size: 2.8rem;
+            }
+            
+            .gallery-row {
+                min-height: 50vh;
+            }
+            
+            .photo-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 30px 20px 15px;
+            }
+            
+            .site-title {
+                font-size: 2.2rem;
+            }
+            
+            .site-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .gallery-row {
+                flex-direction: column;
+                min-height: auto;
+                gap: 5px;
+                margin-bottom: 5px;
+            }
+            
+            .photo-item {
+                height: 70vh;
+            }
+            
+            .photo-item:hover {
+                flex: 1;
+            }
+            
+            .music-controller {
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+                justify-content: space-between;
+            }
+            
+            .info-features {
+                gap: 30px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .site-title {
+                font-size: 1.8rem;
+            }
+            
+            .photo-item {
+                height: 60vh;
+            }
+            
+            .music-controller {
+                flex-direction: column;
+                gap: 15px;
+                border-radius: 20px;
+                padding: 20px;
+            }
+            
+            .music-info, .music-controls {
+                width: 100%;
+            }
+            
+            .gallery-info {
+                padding: 40px 20px;
+            }
+        }
+        
+        /* Анимации */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .photo-item {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .photo-item:nth-child(1) { animation-delay: 0.1s; }
+        .photo-item:nth-child(2) { animation-delay: 0.2s; }
+        .photo-item:nth-child(3) { animation-delay: 0.3s; }
+        .photo-item:nth-child(4) { animation-delay: 0.4s; }
+        .photo-item:nth-child(5) { animation-delay: 0.5s; }
+        .photo-item:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="site-title">W Gallery</h1>
+            <p class="site-subtitle"></p>
+        </header>
+        
+        <main>
+            <div class="gallery-container">
+                <div class="gallery">
+                    <!-- Ряд 1 -->
+                    <div class="gallery-row">
+                        <div class="photo-item">
+                            <img src="Swin1.png" alt="Swin1">
+                            <div class="photo-info">
+                                <h3 class="photo-title">W mugshot</h3>
+                                <p class="photo-author">xXx_LIL-$WIN_xXx</p>
+                                <p class="photo-year">2019</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-item">
+                            <img src="Swin2.png" alt="Swin2">
+                            <div class="photo-info">
+                                <h3 class="photo-title">I just bought me motor</h3>
+                                <p class="photo-author">xXx_LIL-$WIN_xXx</p>
+                                <p class="photo-year">2023</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ряд 2 -->
+                    <div class="gallery-row">
+                        <div class="photo-item">
+                            <img src="Swin3.png" alt="Swin3">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Look at me motor W motor</h3>
+                                <p class="photo-author">xXx_LIL-$WIN_xXx</p>
+                                <p class="photo-year">2023</p>
+                            </div>
+                        </div>
+                        
+                        <div class="photo-item">
+                            <img src="Swin4.png" alt="Swin4">
+                            <div class="photo-info">
+                                <h3 class="photo-title">Some шалунинг is happenin</h3>
+                                <p class="photo-author">xXx_LIL-$WIN_xXx</p>
+                                <p class="photo-year">2024</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="gallery-info">
+                <h2 class="info-title"></h2>
+                <p class="info-text">
+                    
+                </p>
+                
+                <div class="info-features">
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-expand-alt"></i>
+                        </div>
+                        <h3 class="feature-title"></h3>
+                        <p class="feature-desc"></p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h3 class="feature-title"></h3>
+                        <p class="feature-desc"></p>
+                    </div>
+                    
+                    <div class="feature">
+                        <div class="feature-icon">
+                            <i class="fas fa-wifi-slash"></i>
+                        </div>
+                        <h3 class="feature-title"></h3>
+                        <p class="feature-desc"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <p></p>
+            <p></p>
+        </footer>
+    </div>
+    
+    <!-- Музыкальный контроллер -->
+    <div class="music-controller">
+        <div class="music-info">
+            <div class="music-title" id="musicTitle">W Music</div>
+            <div class="music-artist" id="musicArtist">xXx_LIL-$WIN_xXx</div>
+        </div>
+        
+        <div class="music-controls">
+            <button id="playBtn" class="music-btn">
+                <i class="fas fa-play"></i>
+            </button>
+            
+            <div class="volume-container">
+                <i class="fas fa-volume-up" id="volumeIcon"></i>
+                <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Аудио элемент для фоновой музыки -->
+    <audio id="backgroundMusic" loop>
+        <!-- Указываем путь к вашему аудиофайлу -->
+        <source src="SwinMusic.mp3" type="audio/mpeg">
+        <source src="SwinMusic.ogg" type="audio/ogg">
+        Ваш браузер не поддерживает аудио элемент.
+    </audio>
+    
+    <script>
+        // Элементы DOM
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const playBtn = document.getElementById('playBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeIcon = document.getElementById('volumeIcon');
+        const musicTitle = document.getElementById('musicTitle');
+        const musicArtist = document.getElementById('musicArtist');
+        
+        // Состояние воспроизведения
+        let isPlaying = false;
+        
+        // Функция для переключения воспроизведения/паузы
+        function toggleMusic() {
+            if (isPlaying) {
+                backgroundMusic.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                musicTitle.textContent = "Музыка на паузе";
+            } else {
+                // Пробуем воспроизвести музыку
+                backgroundMusic.play()
+                    .then(() => {
+                        isPlaying = true;
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        musicTitle.textContent = "W Music играет";
+                    })
+                    .catch(error => {
+                        console.log("Автовоспроизведение заблокировано: ", error);
+                        // Показываем уведомление пользователю
+                        musicTitle.textContent = "Нажмите для проигрывания";
+                        alert("Нажмите кнопку воспроизведения, чтобы запустить музыку");
+                    });
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        // Функция для установки громкости
+        function setVolume(value) {
+            const volume = value / 100;
+            backgroundMusic.volume = volume;
+            
+            // Обновляем иконку громкости
+            if (volume === 0) {
+                volumeIcon.className = 'fas fa-volume-mute';
+            } else if (volume < 0.5) {
+                volumeIcon.className = 'fas fa-volume-down';
+            } else {
+                volumeIcon.className = 'fas fa-volume-up';
+            }
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Настройка обработчиков событий
+            playBtn.addEventListener('click', toggleMusic);
+            
+            // Настройка регулятора громкости
+            volumeSlider.addEventListener('input', function() {
+                setVolume(this.value);
+            });
+            
+            // Настройка громкости по умолчанию
+            setVolume(volumeSlider.value);
+            
+            // Пробуем автовоспроизведение с задержкой
+            setTimeout(() => {
+                // Проверяем, поддерживает ли браузер автовоспроизведение
+                backgroundMusic.play()
+                    .then(() => {
+                        isPlaying = true;
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        musicTitle.textContent = "W Music играет";
+                    })
+                    .catch(error => {
+                        console.log("Автовоспроизведение заблокировано браузером");
+                        // Оставляем кнопку в состоянии "play"
+                        musicTitle.textContent = "Нажмите для проигрывания";
+                    });
+            }, 1000);
+            
+            // Обновляем состояние кнопки при окончании трека (для loop это не нужно, но на всякий случай)
+            backgroundMusic.addEventListener('ended', function() {
+                isPlaying = false;
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                musicTitle.textContent = "Трек завершен";
+            });
+        });
+        
+        // Обработка нажатия клавиш для управления музыкой
+        document.addEventListener('keydown', function(e) {
+            // Пробел - воспроизведение/пауза
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleMusic();
+            }
+            // Стрелки вверх/вниз - громкость
+            else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                const newVolume = Math.min(100, parseInt(volumeSlider.value) + 10);
+                volumeSlider.value = newVolume;
+                setVolume(newVolume);
+            }
+            else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                const newVolume = Math.max(0, parseInt(volumeSlider.value) - 10);
+                volumeSlider.value = newVolume;
+                setVolume(newVolume);
+            }
+        });
+        
+        // Добавляем информацию о клавишах управления
+        musicArtist.textContent = "Управление: пробел - играть/пауза, стрелки - громкость";
+    </script>
+</body>
+</html>
