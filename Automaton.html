@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Automation — Car Randomizer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #10131c;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      background: rgba(20, 24, 35, 0.85);
+      backdrop-filter: blur(16px);
+      border-radius: 2.5rem;
+      padding: 2.2rem 2rem;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #d9dfee;
+    }
+    h1 {
+      font-weight: 500;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 0.4rem;
+      color: #f0f4ff;
+      text-transform: uppercase;
+    }
+    .subtitle {
+      text-align: center;
+      margin-bottom: 2.2rem;
+      color: #7a83a0;
+      font-weight: 400;
+      font-size: 1rem;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+    button {
+      background: #22283a;
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.95rem 2rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #dce3ff;
+      background: linear-gradient(180deg, #2e354b 0%, #1a1f2d 100%);
+      box-shadow: 0 6px 0 #0c0f16, 0 10px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: all 0.08s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      flex: 1 1 auto;
+      min-width: 210px;
+      letter-spacing: 0.4px;
+    }
+    button:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #0b0e14, 0 8px 15px rgba(0,0,0,0.6);
+      background: linear-gradient(180deg, #262d40 0%, #131722 100%);
+    }
+    .output-panel {
+      background: #0b0e16;
+      border-radius: 1.8rem;
+      padding: 1.8rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.7);
+      color: #c8d1e6;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      max-height: 580px;
+      overflow-y: auto;
+    }
+    .spec-grid { display: flex; flex-wrap: wrap; gap: 24px; }
+    .spec-column { flex: 1 1 260px; }
+    .spec-column h3 {
+      font-weight: 500;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-bottom: 1px solid #2e3547;
+      padding-bottom: 0.5rem;
+      margin-bottom: 0.9rem;
+      color: #9ea9cc;
+    }
+    .param { display: flex; justify-content: space-between; margin-bottom: 0.35rem; font-size: 0.92rem; }
+    .param span:first-child { color: #8089a8; }
+    .param span:last-child { font-weight: 500; color: #e1e8ff; }
+    .high { color: #4caf50 !important; font-weight: 600; }
+    .medium { color: #ffb74d !important; font-weight: 600; }
+    .low { color: #e57373 !important; font-weight: 600; }
+    hr { border: none; border-top: 1px solid #262d3f; margin: 1.2rem 0; }
+    .goal-box { background: #161b27; border-radius: 1.5rem; padding: 1.6rem; margin-top: 0.3rem; }
+    .goal-title { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.4rem; color: #ffb347; }
+    .goal-desc { font-size: 1.1rem; display: flex; flex-wrap: wrap; gap: 20px; }
+    .footnote { font-size: 0.82rem; color: #5b6379; text-align: center; margin-top: 1rem; }
+    .fix-row {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem;
+      margin-bottom: 2rem; background: #161b27; padding: 1rem 1.5rem; border-radius: 2rem;
+    }
+    .fix-row label { color: #a8b3d1; font-size: 0.95rem; }
+    select {
+      background: #2b3142; color: #e0e5f5; border: 1px solid #3d445a;
+      padding: 0.5rem 1.2rem; border-radius: 2rem; font-weight: 500;
+    }
+    .class-score { text-align: center; margin-top: 0.5rem; font-size: 1.2rem; font-weight: 500; }
+    .comparison-container { display: flex; gap: 24px; flex-wrap: wrap; }
+    .comparison-column { flex: 1 1 45%; min-width: 300px; background: #0b0e16; border-radius: 1.8rem; padding: 1.2rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Automation Randomizer</h1>
+  <div class="subtitle">генератор концептов и технических характеристик</div>
+
+  <div class="fix-row">
+    <label>Класс:</label>
+    <select id="fixClass"><option value="">Случайно</option></select>
+    <label>Кузов:</label>
+    <select id="fixBody"><option value="">Случайно</option></select>
+  </div>
+
+  <div class="button-group">
+    <button id="fullSpecBtn">Полные характеристики</button>
+    <button id="goalBtn">Цель и кузов</button>
+    <button id="nameGenBtn">Сгенерировать название</button>
+    <button id="rivalBtn">Сгенерировать соперника</button>
+  </div>
+
+  <div class="output-panel" id="outputDisplay">
+    <div style="text-align: center; color: #4b5268;">Нажмите кнопку, чтобы создать случайную конфигурацию</div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    "use strict";
+
+    // ================== РАСШИРЕННЫЙ СПИСОК КУЗОВОВ ==================
+    const BODY_TYPES = [
+      "Coupe (2‑дв.)","Sedan (4‑дв.)","Hatchback (3‑дв.)","Hatchback (5‑дв.)",
+      "Wagon (3‑дв.)","Wagon (5‑дв.)","Minivan / MPV","Convertible (soft‑top)",
+      "Convertible (hard‑top)","SUV (3‑дв.)","SUV (5‑дв.)","Truck (2‑дв. ute)",
+      "Truck (4‑дв.)","Van (3‑дв.)","Van (5‑дв.)",
+      "Shooting Brake (3‑дв.)","Targa (2‑дв.)","Fastback (5‑дв.)","Liftback (5‑дв.)",
+      "Ute (2‑дв.)","Long‑tail (2‑дв.)"
+    ];
+    const CAR_CLASSES = [
+      "Economy / Budget", "Family", "Luxury", "Executive", "GT", "Sports Car", "Hot Hatch", "Muscle Car",
+      "Supercar", "Hypercar", "Off‑roader / SUV", "Pickup / Utility", "Commercial Van",
+      "Kei Car / City car", "Track Toy / Lightweight",
+      "Compact Crossover", "Mid‑Size Crossover", "Full‑Size SUV", "Sport Sedan", "Roadster",
+      "Shooting Brake", "Grand Tourer", "Luxury Coupe", "Pony Car", "Retro / Classic",
+      "Off‑road Buggy", "Rally Homologation", "Le Mans Prototype", "Formula / Open Wheel",
+      "Three‑Wheeler", "Amphibian", "Air‑Cooled Classic", "Diesel Off‑Roader", "Hydrogen / EV"
+    ];
+    const ENGINE_PLACEMENTS = ["Front Transverse","Front Longitudinal","Mid Transverse","Mid Longitudinal","Rear Longitudinal"];
+    const DRIVETRAINS = ["FWD","RWD","AWD (full‑time)","AWD (part‑time)","4x4"];
+    const ENGINE_CONFIGS = ["Inline‑3","Inline‑4","Inline‑5","Inline‑6","V6","V8","V10","V12","Boxer‑4","Boxer‑6","Rotary (Wankel)"];
+    const ASPIRATIONS = ["Naturally Aspirated","Turbocharged","Twin‑Turbo","Supercharged","Twin‑Charged (turbo + super)"];
+    const VALVETRAINS = ["OHV","SOHC","DOHC","Pushrod"];
+    const FUEL_SYSTEMS = ["Carburetor","Single‑Point EFI","Multi‑Point EFI","Direct Injection","Dual Injection (port + direct)"];
+    const GEARBOX_TYPES = ["Manual","Automatic (torque converter)","Advanced Automatic","Sequential","Dual‑Clutch (DCT)"];
+    const DIFF_TYPES = ["Open","LSD (mechanical)","LSD (viscous)","Locking differential","Electronic active diff","Welded / Spool"];
+    const FRONT_SUSPENSION = ["MacPherson Strut","Double Wishbone","Pushrod","Multilink","Solid Axle (coil)","Solid Axle (leaf)"];
+    const REAR_SUSPENSION = ["MacPherson Strut","Double Wishbone","Multilink","Pushrod","Semi‑Trailing Arm","Torsion Beam","Solid Axle (coil)","Solid Axle (leaf)"];
+    const CHASSIS_TYPES = ["Ladder Frame","Monocoque","Space Frame","Semi‑Space Frame","Light Truck Monocoque"];
+    const CHASSIS_MATERIALS = ["Steel","Galvanized Steel","Corrosion Resistant Steel","AHSS Steel","Aluminium","Glued Aluminium","Carbon Fibre"];
+    const PANEL_MATERIALS = ["Steel","Treated Steel","Fibreglass","Aluminium","Partial Aluminium","Partial Carbon Fibre","Carbon Fibre"];
+    const BRAKE_TYPES = ["Drum","Solid Disc","Vented Disc","Carbon Ceramic"];
+    const CALIPER_PISTONS = ["1","2","3","4","6"];
+    const DAMPER_TYPES = ["Passive","Advanced","Adaptive","Semi‑Active"];
+    const ENTERTAINMENT = ["None","Basic AM/FM","Standard Audio","Premium Audio","Luxury Audio","Infotainment Basic","Infotainment Premium","Navigation + HUD"];
+    const DRIVER_ASSISTS = ["None","ABS only","ABS + TCS","ABS + TCS + ESC","ABS + TCS + ESC + Launch Control"];
+    const FUEL_TYPES = ["Unleaded","Leaded","Ethanol Blend","CNG / LPG","Methanol","Nitromethane"];
+
+    // ================== ЦЕЛЕВЫЕ ПОКАЗАТЕЛИ (ОБНОВЛЁННЫЕ) ==================
+    const CLASS_TARGETS = {
+      "Economy / Budget": { body: ["Sedan (4‑дв.)","Hatchback (5‑дв.)","Liftback (5‑дв.)"], enginePlacement: ["Front Transverse"], drive: ["FWD"], engineConfig: ["Inline‑3","Inline‑4"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [0.9, 2.0], valvetrain: ["SOHC","DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,11.0], powerRange: [55,100], torque: [90,180], redline: [5500,7000], fuelType: ["Unleaded","Ethanol Blend"], gearbox: ["Manual"], gearCount: [4,6], diff: ["Open"], frontSusp: ["MacPherson Strut"], rearSusp: ["Torsion Beam","MacPherson Strut"], dampers: ["Passive"], chassis: ["Monocoque","Semi‑Space Frame"], chassisMaterial: ["Steel","Galvanized Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Solid Disc","Drum"], calipers: [1,2], wheelDiameter: [14,16], tireWidth: [155,205], tireProfile: [55,75], entertainment: ["Basic AM/FM","Standard Audio"], assists: ["None","ABS only"], seats: [4,5], cargo: [200,500], mass: [800,1200], topSpeed: [150,190], acceleration: [9.0,14.0], braking: [34,42], cornering: [0.72,0.85], comfortRange: [3,10], drivabilityRange: [3,10], offroad: [0,0.2], convertible: [0,0], economy: [4.0,7.0], emissions: [90,150], price: [9500,18000] },
+      "Family": { body: ["Sedan (4‑дв.)","Wagon (5‑дв.)","Minivan / MPV","Liftback (5‑дв.)","Fastback (5‑дв.)"], enginePlacement: ["Front Transverse","Front Longitudinal"], drive: ["FWD","AWD (full‑time)"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [1.8,3.5], valvetrain: ["DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.5,11.5], powerRange: [90,180], torque: [160,300], redline: [6000,7500], fuelType: ["Unleaded"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [5,8], diff: ["Open","LSD (viscous)"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Multilink","Torsion Beam"], dampers: ["Passive","Advanced"], chassis: ["Monocoque"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,3], wheelDiameter: [16,18], tireWidth: [195,235], tireProfile: [45,65], entertainment: ["Standard Audio","Infotainment Basic"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [5,7], cargo: [400,1800], mass: [1200,1800], topSpeed: [170,220], acceleration: [7.5,11.0], braking: [32,40], cornering: [0.78,0.95], comfortRange: [8,18], drivabilityRange: [8,18], offroad: [0,0.4], convertible: [0,0], economy: [5.5,9.0], emissions: [120,190], price: [15000,35000] },
+      "Luxury": { body: ["Sedan (4‑дв.)","Wagon (5‑дв.)","SUV (5‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["V6","V8"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [3.0,6.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.0,11.0], powerRange: [180,320], torque: [300,550], redline: [6000,8000], fuelType: ["Unleaded"], gearbox: ["Automatic (torque converter)","Advanced Automatic"], gearCount: [6,10], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["Double Wishbone","Multilink"], rearSusp: ["Multilink"], dampers: ["Adaptive","Semi‑Active"], chassis: ["Monocoque"], chassisMaterial: ["Aluminium","AHSS Steel"], panelMaterial: ["Aluminium","Partial Aluminium"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [3,6], wheelDiameter: [18,21], tireWidth: [225,285], tireProfile: [35,50], entertainment: ["Premium Audio","Luxury Audio","Navigation + HUD"], assists: ["ABS + TCS + ESC","ABS + TCS + ESC + Launch Control"], seats: [4,5], cargo: [400,600], mass: [1600,2400], topSpeed: [220,280], acceleration: [4.5,7.5], braking: [30,38], cornering: [0.85,1.05], comfortRange: [18,28], drivabilityRange: [12,25], offroad: [0,0.3], convertible: [0,0.2], economy: [8.0,14.0], emissions: [180,280], price: [50000,130000] },
+      "Executive": { body: ["Sedan (4‑дв.)","Wagon (5‑дв.)","Fastback (5‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["Inline‑4","V6"], aspiration: ["Turbocharged"], displacement: [2.0,4.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.5,11.0], powerRange: [140,240], torque: [240,400], redline: [6000,7500], fuelType: ["Unleaded"], gearbox: ["Advanced Automatic","Automatic (torque converter)"], gearCount: [6,9], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["Double Wishbone","Multilink"], rearSusp: ["Multilink"], dampers: ["Adaptive","Advanced"], chassis: ["Monocoque"], chassisMaterial: ["AHSS Steel","Aluminium"], panelMaterial: ["Aluminium","Partial Aluminium"], brakes: ["Vented Disc"], calipers: [3,4], wheelDiameter: [17,20], tireWidth: [215,255], tireProfile: [40,55], entertainment: ["Premium Audio","Infotainment Premium"], assists: ["ABS + TCS + ESC"], seats: [4,5], cargo: [450,600], mass: [1400,2000], topSpeed: [210,260], acceleration: [5.5,8.5], braking: [31,38], cornering: [0.82,1.0], comfortRange: [15,24], drivabilityRange: [10,22], offroad: [0,0.2], convertible: [0,0], economy: [6.5,10.0], emissions: [150,220], price: [35000,80000] },
+      "GT": { body: ["Coupe (2‑дв.)","Shooting Brake (3‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["V6","V8","V12"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [3.5,6.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [10.0,12.0], powerRange: [200,400], torque: [350,600], redline: [6500,8500], fuelType: ["Unleaded"], gearbox: ["Advanced Automatic","Dual‑Clutch (DCT)"], gearCount: [6,8], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["Double Wishbone","Multilink"], rearSusp: ["Multilink"], dampers: ["Adaptive","Semi‑Active"], chassis: ["Monocoque","Space Frame"], chassisMaterial: ["Aluminium","Carbon Fibre"], panelMaterial: ["Aluminium","Partial Carbon Fibre"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [4,6], wheelDiameter: [19,22], tireWidth: [245,305], tireProfile: [30,45], entertainment: ["Premium Audio","Infotainment Premium"], assists: ["ABS + TCS + ESC"], seats: [2,4], cargo: [200,450], mass: [1300,1800], topSpeed: [240,300], acceleration: [3.8,6.0], braking: [30,36], cornering: [0.95,1.15], comfortRange: [10,20], drivabilityRange: [12,24], offroad: [0,0.1], convertible: [0,0.5], economy: [9.0,15.0], emissions: [200,300], price: [70000,150000] },
+      "Sports Car": { body: ["Coupe (2‑дв.)","Convertible (soft‑top)","Targa (2‑дв.)"], enginePlacement: ["Front Longitudinal","Mid Longitudinal"], drive: ["RWD"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [2.0,4.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [10.5,12.5], powerRange: [150,300], torque: [200,400], redline: [7000,9000], fuelType: ["Unleaded"], gearbox: ["Manual","Dual‑Clutch (DCT)"], gearCount: [6,8], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["Double Wishbone","MacPherson Strut"], rearSusp: ["Multilink","Double Wishbone"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque","Space Frame"], chassisMaterial: ["Aluminium","AHSS Steel"], panelMaterial: ["Aluminium","Fibreglass"], brakes: ["Vented Disc"], calipers: [3,4], wheelDiameter: [17,20], tireWidth: [215,265], tireProfile: [35,50], entertainment: ["Standard Audio","Infotainment Basic"], assists: ["ABS + TCS + ESC"], seats: [2], cargo: [100,300], mass: [900,1400], topSpeed: [210,280], acceleration: [4.0,7.0], braking: [30,37], cornering: [1.0,1.3], comfortRange: [4,14], drivabilityRange: [16,27], offroad: [0,0.1], convertible: [0,1.0], economy: [6.0,10.0], emissions: [150,240], price: [30000,90000] },
+      "Hot Hatch": { body: ["Hatchback (3‑дв.)","Hatchback (5‑дв.)"], enginePlacement: ["Front Transverse"], drive: ["FWD","AWD (full‑time)"], engineConfig: ["Inline‑4"], aspiration: ["Turbocharged"], displacement: [1.6,2.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.0,10.5], powerRange: [150,250], torque: [240,400], redline: [6500,7500], fuelType: ["Unleaded"], gearbox: ["Manual","Dual‑Clutch (DCT)"], gearCount: [6,7], diff: ["LSD (mechanical)"], frontSusp: ["MacPherson Strut"], rearSusp: ["Multilink","Torsion Beam"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc"], calipers: [2,3], wheelDiameter: [17,19], tireWidth: [205,235], tireProfile: [35,45], entertainment: ["Standard Audio","Infotainment Basic"], assists: ["ABS + TCS + ESC"], seats: [4,5], cargo: [250,450], mass: [1100,1500], topSpeed: [210,260], acceleration: [4.5,7.0], braking: [31,37], cornering: [0.95,1.15], comfortRange: [6,14], drivabilityRange: [14,22], offroad: [0,0.1], convertible: [0,0], economy: [6.5,9.5], emissions: [150,210], price: [25000,45000] },
+      "Muscle Car": { body: ["Coupe (2‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD"], engineConfig: ["V8"], aspiration: ["Naturally Aspirated","Supercharged"], displacement: [4.0,7.0], valvetrain: ["OHV","DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,11.0], powerRange: [250,450], torque: [400,650], redline: [5500,7000], fuelType: ["Unleaded"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [5,8], diff: ["LSD (mechanical)"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Multilink","Solid Axle (coil)"], dampers: ["Advanced","Passive"], chassis: ["Monocoque","Space Frame"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Fibreglass"], brakes: ["Vented Disc"], calipers: [3,4], wheelDiameter: [17,20], tireWidth: [235,305], tireProfile: [35,50], entertainment: ["Standard Audio","Premium Audio"], assists: ["ABS + TCS"], seats: [2,4], cargo: [200,400], mass: [1300,1900], topSpeed: [220,290], acceleration: [3.5,6.0], braking: [31,38], cornering: [0.85,1.05], comfortRange: [4,12], drivabilityRange: [8,18], offroad: [0,0.1], convertible: [0,0.2], economy: [10.0,18.0], emissions: [250,380], price: [35000,70000] },
+      "Supercar": { body: ["Coupe (2‑дв.)"], enginePlacement: ["Mid Longitudinal","Rear Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["V8","V10","V12"], aspiration: ["Naturally Aspirated","Twin‑Turbo"], displacement: [3.5,6.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [11.0,13.5], powerRange: [400,650], torque: [450,750], redline: [8000,9500], fuelType: ["Unleaded"], gearbox: ["Dual‑Clutch (DCT)","Sequential"], gearCount: [7,10], diff: ["Electronic active diff"], frontSusp: ["Double Wishbone","Pushrod"], rearSusp: ["Double Wishbone","Multilink"], dampers: ["Adaptive","Semi‑Active"], chassis: ["Carbon Fibre","Space Frame"], chassisMaterial: ["Carbon Fibre","Glued Aluminium"], panelMaterial: ["Carbon Fibre","Partial Carbon Fibre"], brakes: ["Carbon Ceramic"], calipers: [6,6], wheelDiameter: [19,22], tireWidth: [245,355], tireProfile: [25,35], entertainment: ["Infotainment Premium","Navigation + HUD"], assists: ["ABS + TCS + ESC + Launch Control"], seats: [2], cargo: [100,250], mass: [900,1400], topSpeed: [280,370], acceleration: [2.5,4.0], braking: [28,33], cornering: [1.15,1.45], comfortRange: [4,14], drivabilityRange: [14,24], offroad: [0,0.05], convertible: [0,0.3], economy: [10.0,17.0], emissions: [250,400], price: [150000,400000] },
+      "Hypercar": { body: ["Coupe (2‑дв.)","Long‑tail (2‑дв.)"], enginePlacement: ["Mid Longitudinal","Rear Longitudinal"], drive: ["AWD (full‑time)","RWD"], engineConfig: ["V8","V10","V12"], aspiration: ["Twin‑Turbo","Twin‑Charged (turbo + super)"], displacement: [3.0,6.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [11.5,13.5], powerRange: [650,900], torque: [700,1100], redline: [8500,10000], fuelType: ["Unleaded","Ethanol Blend"], gearbox: ["Dual‑Clutch (DCT)","Sequential"], gearCount: [7,10], diff: ["Electronic active diff"], frontSusp: ["Pushrod","Double Wishbone"], rearSusp: ["Pushrod","Multilink"], dampers: ["Semi‑Active","Adaptive"], chassis: ["Carbon Fibre","Space Frame"], chassisMaterial: ["Carbon Fibre"], panelMaterial: ["Carbon Fibre"], brakes: ["Carbon Ceramic"], calipers: [6,6], wheelDiameter: [20,22], tireWidth: [265,355], tireProfile: [25,35], entertainment: ["Navigation + HUD"], assists: ["ABS + TCS + ESC + Launch Control"], seats: [1,2], cargo: [50,200], mass: [700,1100], topSpeed: [330,420], acceleration: [1.9,3.0], braking: [26,31], cornering: [1.3,1.6], comfortRange: [2,8], drivabilityRange: [10,20], offroad: [0,0], convertible: [0,0], economy: [12.0,20.0], emissions: [280,450], price: [300000,800000] },
+      "Off‑roader / SUV": { body: ["SUV (3‑дв.)","SUV (5‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["4x4","AWD (part‑time)"], engineConfig: ["Inline‑4","V6","V8"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [2.0,5.0], valvetrain: ["DOHC","OHV"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,11.0], powerRange: [100,250], torque: [200,450], redline: [5000,7000], fuelType: ["Unleaded","Diesel"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [5,8], diff: ["Locking differential","LSD (mechanical)"], frontSusp: ["Double Wishbone","Solid Axle (coil)"], rearSusp: ["Solid Axle (coil)","Multilink"], dampers: ["Advanced","Passive"], chassis: ["Ladder Frame","Light Truck Monocoque"], chassisMaterial: ["Steel","Galvanized Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,4], wheelDiameter: [16,20], tireWidth: [215,285], tireProfile: [55,75], entertainment: ["Standard Audio","Infotainment Basic"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [4,7], cargo: [500,2500], mass: [1500,2800], topSpeed: [150,210], acceleration: [7.0,12.0], braking: [34,43], cornering: [0.7,0.9], comfortRange: [8,18], drivabilityRange: [6,16], offroad: [0.6,1.0], convertible: [0,0.1], economy: [9.0,16.0], emissions: [200,350], price: [25000,70000] },
+      "Pickup / Utility": { body: ["Truck (2‑дв. ute)","Truck (4‑дв.)","Ute (2‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["4x4","RWD"], engineConfig: ["Inline‑4","V6","V8"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [2.0,5.5], valvetrain: ["DOHC","OHV"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,11.0], powerRange: [100,300], torque: [250,550], redline: [5000,6500], fuelType: ["Unleaded","Diesel"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [5,8], diff: ["Locking differential","LSD (mechanical)"], frontSusp: ["Double Wishbone","Solid Axle (coil)"], rearSusp: ["Solid Axle (leaf)","Multilink"], dampers: ["Passive","Advanced"], chassis: ["Ladder Frame"], chassisMaterial: ["Steel","Galvanized Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,4], wheelDiameter: [16,19], tireWidth: [225,285], tireProfile: [55,75], entertainment: ["Basic AM/FM","Standard Audio"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [2,5], cargo: [800,2800], mass: [1600,2800], topSpeed: [150,200], acceleration: [7.5,12.0], braking: [35,44], cornering: [0.7,0.85], comfortRange: [4,14], drivabilityRange: [4,14], offroad: [0.4,0.9], convertible: [0,0], economy: [10.0,18.0], emissions: [220,380], price: [20000,60000] },
+      "Commercial Van": { body: ["Van (3‑дв.)","Van (5‑дв.)"], enginePlacement: ["Front Transverse"], drive: ["FWD","RWD"], engineConfig: ["Inline‑4"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [1.5,2.5], valvetrain: ["DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,10.5], powerRange: [70,140], torque: [140,250], redline: [5000,6500], fuelType: ["Unleaded","Diesel"], gearbox: ["Manual"], gearCount: [5,6], diff: ["Open"], frontSusp: ["MacPherson Strut"], rearSusp: ["Torsion Beam","Solid Axle (leaf)"], dampers: ["Passive"], chassis: ["Ladder Frame","Light Truck Monocoque"], chassisMaterial: ["Steel"], panelMaterial: ["Steel"], brakes: ["Solid Disc","Drum"], calipers: [1,2], wheelDiameter: [15,17], tireWidth: [175,215], tireProfile: [60,75], entertainment: ["None","Basic AM/FM"], assists: ["None","ABS only"], seats: [2,9], cargo: [1500,3000], mass: [1400,2500], topSpeed: [130,170], acceleration: [10.0,15.0], braking: [36,45], cornering: [0.65,0.78], comfortRange: [2,8], drivabilityRange: [2,8], offroad: [0,0.3], convertible: [0,0], economy: [7.0,12.0], emissions: [160,280], price: [15000,35000] },
+      "Kei Car / City car": { body: ["Hatchback (3‑дв.)","Hatchback (5‑дв.)"], enginePlacement: ["Front Transverse"], drive: ["FWD"], engineConfig: ["Inline‑3"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [0.6,1.0], valvetrain: ["DOHC"], fuelSystem: ["Multi‑Point EFI"], compression: [9.5,11.0], powerRange: [30,63], torque: [50,100], redline: [6500,8000], fuelType: ["Unleaded"], gearbox: ["Manual"], gearCount: [4,6], diff: ["Open"], frontSusp: ["MacPherson Strut"], rearSusp: ["Torsion Beam"], dampers: ["Passive"], chassis: ["Monocoque"], chassisMaterial: ["Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Solid Disc","Drum"], calipers: [1,2], wheelDiameter: [13,15], tireWidth: [145,175], tireProfile: [60,75], entertainment: ["Basic AM/FM","Standard Audio"], assists: ["None","ABS only"], seats: [2,4], cargo: [80,250], mass: [600,900], topSpeed: [120,160], acceleration: [9.0,14.0], braking: [34,42], cornering: [0.72,0.85], comfortRange: [2,8], drivabilityRange: [4,12], offroad: [0,0.1], convertible: [0,0], economy: [3.5,5.5], emissions: [80,120], price: [8000,15000] },
+      "Track Toy / Lightweight": { body: ["Coupe (2‑дв.)"], enginePlacement: ["Front Longitudinal","Mid Longitudinal"], drive: ["RWD"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [1.6,3.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [11.0,13.0], powerRange: [120,280], torque: [160,350], redline: [7500,9500], fuelType: ["Unleaded"], gearbox: ["Manual","Sequential"], gearCount: [5,7], diff: ["LSD (mechanical)","Welded / Spool"], frontSusp: ["Double Wishbone","Pushrod"], rearSusp: ["Double Wishbone","Multilink"], dampers: ["Advanced","Adaptive"], chassis: ["Space Frame","Monocoque"], chassisMaterial: ["Aluminium","Carbon Fibre"], panelMaterial: ["Fibreglass","Carbon Fibre"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [3,4], wheelDiameter: [15,18], tireWidth: [195,245], tireProfile: [40,55], entertainment: ["None","Basic AM/FM"], assists: ["None","ABS only"], seats: [1,2], cargo: [50,200], mass: [500,900], topSpeed: [190,260], acceleration: [3.5,6.5], braking: [29,35], cornering: [1.1,1.45], comfortRange: [1,6], drivabilityRange: [16,27], offroad: [0,0], convertible: [0,0], economy: [5.0,9.0], emissions: [130,220], price: [25000,80000] },
+      "Compact Crossover": { body: ["SUV (5‑дв.)","Hatchback (5‑дв.)"], enginePlacement: ["Front Transverse"], drive: ["FWD","AWD (full‑time)"], engineConfig: ["Inline‑3","Inline‑4"], aspiration: ["Turbocharged","Naturally Aspirated"], displacement: [1.2,2.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.5,11.0], powerRange: [90,180], torque: [150,280], redline: [6000,7500], fuelType: ["Unleaded"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [6,8], diff: ["Open","LSD (viscous)"], frontSusp: ["MacPherson Strut"], rearSusp: ["Torsion Beam","Multilink"], dampers: ["Passive","Advanced"], chassis: ["Monocoque"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,3], wheelDiameter: [16,19], tireWidth: [205,235], tireProfile: [50,65], entertainment: ["Standard Audio","Infotainment Basic"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [4,5], cargo: [350,500], mass: [1100,1600], topSpeed: [170,210], acceleration: [7.5,11.0], braking: [33,40], cornering: [0.75,0.9], comfortRange: [8,16], drivabilityRange: [8,16], offroad: [0.2,0.5], convertible: [0,0], economy: [5.5,8.5], emissions: [130,190], price: [18000,35000] },
+      "Mid‑Size Crossover": { body: ["SUV (5‑дв.)"], enginePlacement: ["Front Transverse","Front Longitudinal"], drive: ["AWD (full‑time)","FWD"], engineConfig: ["Inline‑4","V6"], aspiration: ["Turbocharged","Naturally Aspirated"], displacement: [2.0,3.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.5,11.0], powerRange: [140,250], torque: [220,400], redline: [6000,7500], fuelType: ["Unleaded"], gearbox: ["Automatic (torque converter)","Advanced Automatic"], gearCount: [6,9], diff: ["LSD (viscous)","Electronic active diff"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Multilink"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque"], chassisMaterial: ["AHSS Steel","Aluminium"], panelMaterial: ["Treated Steel","Aluminium"], brakes: ["Vented Disc"], calipers: [2,4], wheelDiameter: [17,20], tireWidth: [225,255], tireProfile: [45,60], entertainment: ["Standard Audio","Premium Audio"], assists: ["ABS + TCS + ESC"], seats: [5,7], cargo: [500,800], mass: [1400,2000], topSpeed: [180,230], acceleration: [6.5,9.5], braking: [32,39], cornering: [0.8,0.95], comfortRange: [10,20], drivabilityRange: [10,20], offroad: [0.2,0.5], convertible: [0,0], economy: [7.0,11.0], emissions: [150,230], price: [25000,50000] },
+      "Full‑Size SUV": { body: ["SUV (5‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["4x4","AWD (full‑time)"], engineConfig: ["V6","V8"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [3.0,6.0], valvetrain: ["DOHC","OHV"], fuelSystem: ["Direct Injection","Multi‑Point EFI"], compression: [9.0,11.0], powerRange: [200,350], torque: [350,600], redline: [5500,7000], fuelType: ["Unleaded"], gearbox: ["Automatic (torque converter)","Advanced Automatic"], gearCount: [6,10], diff: ["Locking differential","LSD (mechanical)"], frontSusp: ["Double Wishbone"], rearSusp: ["Multilink","Solid Axle (coil)"], dampers: ["Adaptive","Semi‑Active"], chassis: ["Ladder Frame","Light Truck Monocoque"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc"], calipers: [3,4], wheelDiameter: [18,22], tireWidth: [245,285], tireProfile: [45,65], entertainment: ["Premium Audio","Infotainment Premium"], assists: ["ABS + TCS + ESC"], seats: [6,8], cargo: [700,1500], mass: [2000,2800], topSpeed: [180,240], acceleration: [6.0,9.0], braking: [33,40], cornering: [0.75,0.9], comfortRange: [14,24], drivabilityRange: [8,16], offroad: [0.5,0.9], convertible: [0,0], economy: [10.0,16.0], emissions: [220,320], price: [45000,90000] },
+      "Sport Sedan": { body: ["Sedan (4‑дв.)","Fastback (5‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["Inline‑4","V6","V8"], aspiration: ["Turbocharged","Naturally Aspirated"], displacement: [2.0,4.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [10.0,12.0], powerRange: [180,350], torque: [280,500], redline: [6500,8000], fuelType: ["Unleaded"], gearbox: ["Manual","Dual‑Clutch (DCT)","Advanced Automatic"], gearCount: [6,8], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["Double Wishbone","MacPherson Strut"], rearSusp: ["Multilink"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque"], chassisMaterial: ["AHSS Steel","Aluminium"], panelMaterial: ["Aluminium","Partial Aluminium"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [3,4], wheelDiameter: [18,20], tireWidth: [225,265], tireProfile: [35,45], entertainment: ["Premium Audio","Infotainment Premium"], assists: ["ABS + TCS + ESC","ABS + TCS + ESC + Launch Control"], seats: [4,5], cargo: [400,500], mass: [1300,1800], topSpeed: [230,290], acceleration: [4.0,6.5], braking: [30,36], cornering: [0.95,1.15], comfortRange: [10,20], drivabilityRange: [14,24], offroad: [0,0.1], convertible: [0,0], economy: [7.0,11.0], emissions: [170,250], price: [40000,85000] },
+      "Roadster": { body: ["Convertible (soft‑top)","Convertible (hard‑top)","Targa (2‑дв.)"], enginePlacement: ["Front Longitudinal","Mid Longitudinal"], drive: ["RWD"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [1.8,3.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [10.5,12.5], powerRange: [140,280], torque: [200,380], redline: [7000,8500], fuelType: ["Unleaded"], gearbox: ["Manual","Dual‑Clutch (DCT)"], gearCount: [6,7], diff: ["LSD (mechanical)"], frontSusp: ["Double Wishbone"], rearSusp: ["Multilink"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque","Space Frame"], chassisMaterial: ["Aluminium","AHSS Steel"], panelMaterial: ["Aluminium","Fibreglass"], brakes: ["Vented Disc"], calipers: [3,4], wheelDiameter: [17,19], tireWidth: [205,245], tireProfile: [35,50], entertainment: ["Standard Audio","Premium Audio"], assists: ["ABS + TCS + ESC"], seats: [2], cargo: [100,250], mass: [850,1200], topSpeed: [210,260], acceleration: [4.5,7.0], braking: [30,36], cornering: [1.0,1.25], comfortRange: [4,14], drivabilityRange: [16,26], offroad: [0,0], convertible: [1.0,1.0], economy: [6.0,9.5], emissions: [150,220], price: [30000,70000] },
+      "Shooting Brake": { body: ["Wagon (3‑дв.)","Wagon (5‑дв.)","Shooting Brake (3‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["Inline‑4","V6","V8"], aspiration: ["Turbocharged","Naturally Aspirated"], displacement: [2.0,4.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [10.0,11.5], powerRange: [180,350], torque: [280,500], redline: [6500,7500], fuelType: ["Unleaded"], gearbox: ["Advanced Automatic","Dual‑Clutch (DCT)"], gearCount: [7,9], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["Double Wishbone","Multilink"], rearSusp: ["Multilink"], dampers: ["Adaptive"], chassis: ["Monocoque"], chassisMaterial: ["Aluminium","AHSS Steel"], panelMaterial: ["Aluminium","Partial Carbon Fibre"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [3,4], wheelDiameter: [18,21], tireWidth: [225,265], tireProfile: [35,45], entertainment: ["Premium Audio","Infotainment Premium"], assists: ["ABS + TCS + ESC"], seats: [4,5], cargo: [400,600], mass: [1400,1900], topSpeed: [220,280], acceleration: [4.2,6.5], braking: [30,36], cornering: [0.9,1.1], comfortRange: [12,22], drivabilityRange: [14,24], offroad: [0,0.1], convertible: [0,0], economy: [7.5,12.0], emissions: [180,260], price: [50000,100000] },
+      "Grand Tourer": { body: ["Coupe (2‑дв.)","Convertible (soft‑top)","Shooting Brake (3‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["V8","V12"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [4.0,6.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [10.0,11.5], powerRange: [300,500], torque: [450,700], redline: [6500,8000], fuelType: ["Unleaded"], gearbox: ["Advanced Automatic","Dual‑Clutch (DCT)"], gearCount: [7,10], diff: ["Electronic active diff"], frontSusp: ["Double Wishbone"], rearSusp: ["Multilink"], dampers: ["Adaptive","Semi‑Active"], chassis: ["Monocoque","Space Frame"], chassisMaterial: ["Aluminium","Carbon Fibre"], panelMaterial: ["Aluminium","Partial Carbon Fibre"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [4,6], wheelDiameter: [19,22], tireWidth: [245,305], tireProfile: [30,45], entertainment: ["Luxury Audio","Navigation + HUD"], assists: ["ABS + TCS + ESC + Launch Control"], seats: [2,4], cargo: [250,450], mass: [1500,2000], topSpeed: [260,320], acceleration: [3.5,5.5], braking: [30,35], cornering: [0.95,1.15], comfortRange: [15,25], drivabilityRange: [14,24], offroad: [0,0.1], convertible: [0,0.5], economy: [9.0,15.0], emissions: [200,300], price: [80000,200000] },
+      "Luxury Coupe": { body: ["Coupe (2‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["V6","V8"], aspiration: ["Turbocharged","Naturally Aspirated"], displacement: [3.0,5.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.5,11.0], powerRange: [220,380], torque: [350,550], redline: [6000,7500], fuelType: ["Unleaded"], gearbox: ["Advanced Automatic","Dual‑Clutch (DCT)"], gearCount: [7,10], diff: ["Electronic active diff","LSD (mechanical)"], frontSusp: ["Double Wishbone"], rearSusp: ["Multilink"], dampers: ["Adaptive","Semi‑Active"], chassis: ["Monocoque"], chassisMaterial: ["Aluminium","Carbon Fibre"], panelMaterial: ["Aluminium","Partial Carbon Fibre"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [4,6], wheelDiameter: [19,21], tireWidth: [235,275], tireProfile: [35,45], entertainment: ["Premium Audio","Luxury Audio"], assists: ["ABS + TCS + ESC + Launch Control"], seats: [2,4], cargo: [250,400], mass: [1500,1900], topSpeed: [240,300], acceleration: [4.0,6.0], braking: [30,35], cornering: [0.9,1.1], comfortRange: [16,26], drivabilityRange: [12,22], offroad: [0,0.1], convertible: [0,0], economy: [8.0,13.0], emissions: [190,270], price: [60000,140000] },
+      "Pony Car": { body: ["Coupe (2‑дв.)","Convertible (soft‑top)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD"], engineConfig: ["V6","V8"], aspiration: ["Naturally Aspirated","Supercharged"], displacement: [3.5,5.5], valvetrain: ["OHV","DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.5,11.0], powerRange: [220,400], torque: [350,550], redline: [6000,7000], fuelType: ["Unleaded"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [6,8], diff: ["LSD (mechanical)"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Multilink","Solid Axle (coil)"], dampers: ["Advanced","Passive"], chassis: ["Monocoque"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Fibreglass"], brakes: ["Vented Disc"], calipers: [3,4], wheelDiameter: [17,20], tireWidth: [235,275], tireProfile: [35,50], entertainment: ["Standard Audio","Premium Audio"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [2,4], cargo: [200,350], mass: [1400,1800], topSpeed: [220,270], acceleration: [4.0,6.5], braking: [31,37], cornering: [0.85,1.05], comfortRange: [6,14], drivabilityRange: [10,18], offroad: [0,0.1], convertible: [0,0.5], economy: [9.0,14.0], emissions: [210,300], price: [28000,55000] },
+      "Retro / Classic": { body: ["Coupe (2‑дв.)","Sedan (4‑дв.)","Convertible (soft‑top)","Fastback (5‑дв.)"], enginePlacement: ["Front Longitudinal"], drive: ["RWD"], engineConfig: ["Inline‑6","V8"], aspiration: ["Naturally Aspirated"], displacement: [2.5,6.0], valvetrain: ["OHV","SOHC"], fuelSystem: ["Carburetor","Multi‑Point EFI"], compression: [8.0,10.0], powerRange: [80,250], torque: [150,400], redline: [4500,6000], fuelType: ["Leaded","Unleaded"], gearbox: ["Manual"], gearCount: [3,5], diff: ["Open","LSD (mechanical)"], frontSusp: ["Double Wishbone","MacPherson Strut"], rearSusp: ["Solid Axle (leaf)","Semi‑Trailing Arm"], dampers: ["Passive"], chassis: ["Ladder Frame","Monocoque"], chassisMaterial: ["Steel"], panelMaterial: ["Steel"], brakes: ["Drum","Solid Disc"], calipers: [1,2], wheelDiameter: [13,16], tireWidth: [165,215], tireProfile: [60,80], entertainment: ["None","Basic AM/FM"], assists: ["None"], seats: [2,5], cargo: [150,400], mass: [800,1600], topSpeed: [140,200], acceleration: [7.0,14.0], braking: [36,45], cornering: [0.65,0.85], comfortRange: [2,12], drivabilityRange: [3,12], offroad: [0,0.2], convertible: [0,0.8], economy: [8.0,16.0], emissions: [180,350], price: [5000,40000] },
+      "Off‑road Buggy": { body: ["SUV (3‑дв.)","Truck (2‑дв. ute)"], enginePlacement: ["Front Longitudinal","Mid Longitudinal"], drive: ["4x4","RWD"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [1.5,3.0], valvetrain: ["DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,10.5], powerRange: [100,250], torque: [180,350], redline: [6000,8000], fuelType: ["Unleaded"], gearbox: ["Manual","Sequential"], gearCount: [5,6], diff: ["Locking differential","LSD (mechanical)"], frontSusp: ["Double Wishbone","Pushrod"], rearSusp: ["Solid Axle (coil)","Multilink"], dampers: ["Advanced","Passive"], chassis: ["Space Frame","Ladder Frame"], chassisMaterial: ["Steel","Aluminium"], panelMaterial: ["Fibreglass","Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,3], wheelDiameter: [15,18], tireWidth: [215,265], tireProfile: [60,80], entertainment: ["None","Basic AM/FM"], assists: ["None","ABS only"], seats: [2,4], cargo: [100,400], mass: [600,1200], topSpeed: [140,190], acceleration: [5.0,9.0], braking: [33,40], cornering: [0.7,0.9], comfortRange: [2,8], drivabilityRange: [6,14], offroad: [0.8,1.0], convertible: [0,0.3], economy: [8.0,14.0], emissions: [180,280], price: [15000,45000] },
+      "Rally Homologation": { body: ["Hatchback (3‑дв.)","Sedan (4‑дв.)","Fastback (5‑дв.)"], enginePlacement: ["Front Transverse","Front Longitudinal"], drive: ["AWD (full‑time)","FWD"], engineConfig: ["Inline‑4"], aspiration: ["Turbocharged"], displacement: [1.6,2.5], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [9.0,10.5], powerRange: [200,350], torque: [280,500], redline: [6500,8000], fuelType: ["Unleaded"], gearbox: ["Sequential","Manual"], gearCount: [6,7], diff: ["LSD (mechanical)","Electronic active diff"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Multilink"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque","Space Frame"], chassisMaterial: ["Steel","AHSS Steel"], panelMaterial: ["Steel","Fibreglass"], brakes: ["Vented Disc","Carbon Ceramic"], calipers: [3,4], wheelDiameter: [15,18], tireWidth: [195,235], tireProfile: [40,60], entertainment: ["None","Basic AM/FM"], assists: ["ABS + TCS + ESC"], seats: [2,4], cargo: [150,300], mass: [900,1300], topSpeed: [200,260], acceleration: [3.5,6.0], braking: [29,35], cornering: [1.0,1.3], comfortRange: [2,8], drivabilityRange: [12,22], offroad: [0,0.5], convertible: [0,0], economy: [7.0,12.0], emissions: [170,260], price: [30000,70000] },
+      "Le Mans Prototype": { body: ["Coupe (2‑дв.)","Long‑tail (2‑дв.)"], enginePlacement: ["Mid Longitudinal"], drive: ["RWD","AWD (full‑time)"], engineConfig: ["V6","V8","V10"], aspiration: ["Twin‑Turbo","Naturally Aspirated"], displacement: [2.0,5.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [12.0,14.0], powerRange: [400,800], torque: [500,900], redline: [8000,10000], fuelType: ["Unleaded","Ethanol Blend"], gearbox: ["Sequential","Dual‑Clutch (DCT)"], gearCount: [6,8], diff: ["Electronic active diff","Welded / Spool"], frontSusp: ["Pushrod","Double Wishbone"], rearSusp: ["Pushrod","Multilink"], dampers: ["Semi‑Active","Adaptive"], chassis: ["Carbon Fibre","Space Frame"], chassisMaterial: ["Carbon Fibre"], panelMaterial: ["Carbon Fibre"], brakes: ["Carbon Ceramic"], calipers: [6,6], wheelDiameter: [18,20], tireWidth: [265,335], tireProfile: [25,35], entertainment: ["None"], assists: ["ABS + TCS + ESC"], seats: [1,1], cargo: [0,50], mass: [700,950], topSpeed: [300,380], acceleration: [2.0,3.5], braking: [25,30], cornering: [1.4,1.8], comfortRange: [1,3], drivabilityRange: [16,26], offroad: [0,0], convertible: [0,0], economy: [14.0,22.0], emissions: [300,450], price: [500000,1500000] },
+      "Formula / Open Wheel": { body: ["Coupe (2‑дв.)","Convertible (soft‑top)"], enginePlacement: ["Mid Longitudinal","Rear Longitudinal"], drive: ["RWD"], engineConfig: ["Inline‑4","V6","V8"], aspiration: ["Turbocharged","Naturally Aspirated"], displacement: [1.6,3.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [12.0,15.0], powerRange: [200,800], torque: [250,650], redline: [9000,12000], fuelType: ["Methanol","Unleaded"], gearbox: ["Sequential","Manual"], gearCount: [6,8], diff: ["Welded / Spool","Electronic active diff"], frontSusp: ["Pushrod","Double Wishbone"], rearSusp: ["Pushrod","Multilink"], dampers: ["Semi‑Active","Adaptive"], chassis: ["Carbon Fibre","Space Frame"], chassisMaterial: ["Carbon Fibre"], panelMaterial: ["Carbon Fibre","Fibreglass"], brakes: ["Carbon Ceramic"], calipers: [4,6], wheelDiameter: [15,18], tireWidth: [245,305], tireProfile: [30,45], entertainment: ["None"], assists: ["None","ABS only"], seats: [1,1], cargo: [0,0], mass: [450,750], topSpeed: [260,360], acceleration: [1.8,3.5], braking: [24,30], cornering: [1.5,2.0], comfortRange: [1,3], drivabilityRange: [18,28], offroad: [0,0], convertible: [0,0.2], economy: [12.0,20.0], emissions: [250,400], price: [100000,500000] },
+      "Three‑Wheeler": { body: ["Convertible (soft‑top)","Hatchback (3‑дв.)"], enginePlacement: ["Front Transverse","Mid Transverse"], drive: ["RWD","FWD"], engineConfig: ["Inline‑3","Inline‑4"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [0.5,1.5], valvetrain: ["SOHC","DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,10.5], powerRange: [30,120], torque: [50,160], redline: [6000,8000], fuelType: ["Unleaded"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [4,6], diff: ["Open","LSD (mechanical)"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Semi‑Trailing Arm","Torsion Beam"], dampers: ["Passive","Advanced"], chassis: ["Space Frame","Monocoque"], chassisMaterial: ["Steel","Aluminium"], panelMaterial: ["Fibreglass","Steel"], brakes: ["Solid Disc","Drum"], calipers: [1,2], wheelDiameter: [13,16], tireWidth: [145,195], tireProfile: [50,70], entertainment: ["None","Basic AM/FM"], assists: ["None"], seats: [1,2], cargo: [30,150], mass: [300,700], topSpeed: [100,160], acceleration: [6.0,12.0], braking: [34,42], cornering: [0.65,0.85], comfortRange: [1,6], drivabilityRange: [4,14], offroad: [0,0.1], convertible: [0,0.8], economy: [3.5,6.5], emissions: [80,150], price: [5000,20000] },
+      "Amphibian": { body: ["SUV (3‑дв.)","Truck (2‑дв. ute)"], enginePlacement: ["Front Longitudinal"], drive: ["4x4","AWD (part‑time)"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated","Turbocharged"], displacement: [2.0,3.5], valvetrain: ["DOHC"], fuelSystem: ["Multi‑Point EFI","Direct Injection"], compression: [9.0,10.5], powerRange: [100,220], torque: [180,350], redline: [5500,7000], fuelType: ["Unleaded","Diesel"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [5,7], diff: ["Locking differential","LSD (mechanical)"], frontSusp: ["Double Wishbone","Solid Axle (coil)"], rearSusp: ["Solid Axle (coil)","Multilink"], dampers: ["Advanced","Passive"], chassis: ["Ladder Frame","Space Frame"], chassisMaterial: ["Steel","Aluminium"], panelMaterial: ["Fibreglass","Steel"], brakes: ["Solid Disc","Vented Disc"], calipers: [2,3], wheelDiameter: [16,19], tireWidth: [225,275], tireProfile: [60,80], entertainment: ["Basic AM/FM","Standard Audio"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [2,4], cargo: [200,600], mass: [1200,2200], topSpeed: [130,180], acceleration: [7.5,12.0], braking: [35,43], cornering: [0.65,0.8], comfortRange: [4,12], drivabilityRange: [4,12], offroad: [0.7,1.0], convertible: [0,0.2], economy: [9.0,15.0], emissions: [200,320], price: [25000,60000] },
+      "Air‑Cooled Classic": { body: ["Coupe (2‑дв.)","Convertible (soft‑top)","Sedan (4‑дв.)","Targa (2‑дв.)"], enginePlacement: ["Rear Longitudinal"], drive: ["RWD"], engineConfig: ["Boxer‑4","Boxer‑6"], aspiration: ["Naturally Aspirated"], displacement: [1.2,2.4], valvetrain: ["OHV","SOHC"], fuelSystem: ["Carburetor","Multi‑Point EFI"], compression: [7.5,9.0], powerRange: [30,100], torque: [70,170], redline: [4000,5500], fuelType: ["Leaded","Unleaded"], gearbox: ["Manual"], gearCount: [4,5], diff: ["Open"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Semi‑Trailing Arm","Torsion Beam"], dampers: ["Passive"], chassis: ["Monocoque"], chassisMaterial: ["Steel"], panelMaterial: ["Steel"], brakes: ["Drum","Solid Disc"], calipers: [1,2], wheelDiameter: [14,16], tireWidth: [155,195], tireProfile: [65,80], entertainment: ["None","Basic AM/FM"], assists: ["None"], seats: [2,5], cargo: [100,350], mass: [600,1100], topSpeed: [110,160], acceleration: [10.0,16.0], braking: [37,44], cornering: [0.65,0.8], comfortRange: [2,8], drivabilityRange: [3,10], offroad: [0,0.1], convertible: [0,0.7], economy: [5.0,8.5], emissions: [150,250], price: [4000,25000] },
+      "Diesel Off‑Roader": { body: ["SUV (3‑дв.)","SUV (5‑дв.)","Truck (2‑дв. ute)"], enginePlacement: ["Front Longitudinal"], drive: ["4x4","AWD (part‑time)"], engineConfig: ["Inline‑4","V6","V8"], aspiration: ["Turbocharged"], displacement: [2.5,6.0], valvetrain: ["DOHC","OHV"], fuelSystem: ["Direct Injection"], compression: [14.0,18.0], powerRange: [100,280], torque: [300,650], redline: [4000,5500], fuelType: ["Diesel"], gearbox: ["Manual","Automatic (torque converter)"], gearCount: [5,8], diff: ["Locking differential","LSD (mechanical)"], frontSusp: ["Solid Axle (coil)","Double Wishbone"], rearSusp: ["Solid Axle (leaf)","Multilink"], dampers: ["Passive","Advanced"], chassis: ["Ladder Frame"], chassisMaterial: ["Steel","Galvanized Steel"], panelMaterial: ["Steel","Treated Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,4], wheelDiameter: [16,19], tireWidth: [235,285], tireProfile: [60,80], entertainment: ["Basic AM/FM","Standard Audio"], assists: ["ABS + TCS","ABS + TCS + ESC"], seats: [4,7], cargo: [600,2500], mass: [1800,3000], topSpeed: [140,190], acceleration: [8.0,14.0], braking: [35,44], cornering: [0.65,0.82], comfortRange: [4,14], drivabilityRange: [4,14], offroad: [0.7,1.0], convertible: [0,0], economy: [7.0,13.0], emissions: [200,330], price: [25000,65000] },
+      "Hydrogen / EV": { body: ["Sedan (4‑дв.)","SUV (5‑дв.)","Hatchback (5‑дв.)"], enginePlacement: ["Front Transverse","Front Longitudinal"], drive: ["FWD","AWD (full‑time)"], engineConfig: ["Inline‑4","V6"], aspiration: ["Naturally Aspirated"], displacement: [1.5,3.0], valvetrain: ["DOHC"], fuelSystem: ["Direct Injection"], compression: [11.0,14.0], powerRange: [100,250], torque: [200,450], redline: [6000,8000], fuelType: ["Unleaded","Hydrogen"], gearbox: ["Automatic (torque converter)","Advanced Automatic"], gearCount: [6,9], diff: ["Open","LSD (viscous)"], frontSusp: ["MacPherson Strut","Double Wishbone"], rearSusp: ["Multilink","Torsion Beam"], dampers: ["Advanced","Adaptive"], chassis: ["Monocoque"], chassisMaterial: ["Aluminium","AHSS Steel"], panelMaterial: ["Aluminium","Treated Steel"], brakes: ["Vented Disc","Solid Disc"], calipers: [2,3], wheelDiameter: [17,20], tireWidth: [205,245], tireProfile: [45,60], entertainment: ["Standard Audio","Infotainment Premium"], assists: ["ABS + TCS + ESC"], seats: [4,5], cargo: [350,600], mass: [1300,2000], topSpeed: [160,220], acceleration: [6.0,10.0], braking: [32,39], cornering: [0.75,0.95], comfortRange: [10,20], drivabilityRange: [10,20], offroad: [0,0.3], convertible: [0,0], economy: [1.5,4.0], emissions: [0,50], price: [30000,80000] }
+    };
+
+    // ================== ГЕНЕРАТОР НАЗВАНИЙ ==================
+    const PREFIXES = ["Apex","Nova","Vertex","Eclipse","Quantum","Fusion","Helix","Orion","Phantom","Titan","Omega","Sigma","Alpha","Delta","Stratos","Cyber","Neon","Astro","Solar","Lunar","Velocity","Aero","Turbo","Ultra","Mega","Hyper","Super","Max","Pro","Elite","Buran","Sokol","Taiga","Ural","Volga","Zarya","Molniya","Bars","Smerch","Groza","Iskra","Kometa","Strela","Vostok","Soyuz","Sputnik","Terek","Altay","Sayany","Kavkaz","Elbrus","Ararat","Baikal","Lena","Amur","Irtysh","Ob","Yenisei","Angara","Neva","Dnepr","Don","Volkhov","Onega","Ladoga","Seliger","Karelia","Sibir","Kamchatka","Perun","Veles","Svarog","Dazhbog","Stribog","Mokosh","Kupala","Yarilo","Morozko","Volk","Medved","Lis","Tigr","Orel","Yastreb","Sova","Filin","Lebed","Gagara","Chayka","Berkut","Krechet","Sapsan","Ruslan","Bogatyr","Vityaz","Knyaz","Tsar","Imperator","Grad","Zvezda","Raduga","Meteor","Salyut","Energia","Tayfun","Uragan","Briz","Shtorm","Bely","Krasny","Cherny","Zolotoy","Serebryany","Platinovy"];
+    const SUFFIXES = ["Falcon","Nomad","Raptor","Serpent","Wolf","Storm","Blade","Shadow","Racer","Cruiser","Hawk","Eagle","Viper","Jaguar","Panther","Lynx","Phoenix","Dragon","Griffin","Titan","Ranger","Scout","Warrior","Knight","Glider","Jet","Rocket","Bullet","Arrow","Flash","Bars","Medved","Volk","Tigr","Orel","Sokol","Yastreb","Berkut","Krechet","Sapsan","Lebed","Chayka","Filin","Sova","Gagara","Zubr","Los","Olen","Kaban","Bobr","Kot","Rys","Gepard","Pantera","Lev","Slon","Kit","Akula","Delphin","Kasatka","Morzh","Tyulen","Pingvin","Grad","Krepost","Bastion","Kreml","Mayak","Baza","Arena","Kolizey","Forum","Prestizh","Etalon","Standart","Klassik","Lyux"];
+    function generateName() {
+      const p = PREFIXES[Math.floor(Math.random() * PREFIXES.length)];
+      const s = SUFFIXES[Math.floor(Math.random() * SUFFIXES.length)];
+      return Math.random() < 0.3 ? s + " " + p : p + " " + s;
+    }
+
+    // утилиты
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const randFloat = (min, max, d = 1) => parseFloat((Math.random() * (max - min) + min).toFixed(d));
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const fixClass = document.getElementById('fixClass');
+    const fixBody = document.getElementById('fixBody');
+    CAR_CLASSES.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; fixClass.appendChild(o); });
+    BODY_TYPES.forEach(b => { const o = document.createElement('option'); o.value = b; o.textContent = b; fixBody.appendChild(o); });
+
+    function classRating(value, target) {
+      if (!target) return '';
+      if (Array.isArray(target)) {
+        if (target.length === 2 && typeof target[0] === 'number') {
+          if (value >= target[0] && value <= target[1]) return 'high';
+          const margin = (target[1] - target[0]) * 0.5;
+          if (value >= target[0] - margin && value <= target[1] + margin) return 'medium';
+          return 'low';
+        } else {
+          if (target.includes(value)) return 'high';
+          for (let t of target) { if (value.includes(t)) return 'medium'; }
+          return 'low';
+        }
+      }
+      return '';
+    }
+    function getClassRatingClass(value, target) { return classRating(value, target); }
+
+    function generateFullSpec(fixedClass = null, fixedBody = null) {
+      const body = fixedBody || pick(BODY_TYPES);
+      const carClass = fixedClass || pick(CAR_CLASSES);
+      const enginePlace = pick(ENGINE_PLACEMENTS);
+      const drivetrain = pick(DRIVETRAINS);
+      const engineConfig = pick(ENGINE_CONFIGS);
+      const aspiration = pick(ASPIRATIONS);
+      const valvetrain = pick(VALVETRAINS);
+      const fuelSystem = pick(FUEL_SYSTEMS);
+      const fuelType = pick(FUEL_TYPES);
+      const displacement = randFloat(0.9, 8.4, 2);
+      const maxPowerKW = rand(55, 900);
+      const peakPowerRPM = rand(4800, 9500);
+      const torqueNm = Math.round((maxPowerKW * 9549) / peakPowerRPM);
+      const compression = randFloat(8.0, 13.5, 1);
+      const redline = peakPowerRPM + rand(300, 1200);
+      const gearboxType = pick(GEARBOX_TYPES);
+      const gearCount = pick([4,5,6,7,8,9,10]);
+      const diffType = pick(DIFF_TYPES);
+      const frontSusp = pick(FRONT_SUSPENSION);
+      const rearSusp = pick(REAR_SUSPENSION);
+      const damperType = pick(DAMPER_TYPES);
+      const chassisType = pick(CHASSIS_TYPES);
+      const chassisMat = pick(CHASSIS_MATERIALS);
+      const panelMat = pick(PANEL_MATERIALS);
+      const frontBrake = pick(BRAKE_TYPES);
+      const rearBrake = pick(BRAKE_TYPES);
+      const frontCalipers = pick(CALIPER_PISTONS) + "-piston";
+      const rearCalipers = pick(CALIPER_PISTONS) + "-piston";
+      const tireWidth = rand(155, 355);
+      const tireProfile = rand(30, 75);
+      const wheelDiameter = pick([14,15,16,17,18,19,20,21,22]);
+      const entertainment = pick(ENTERTAINMENT);
+      const assists = pick(DRIVER_ASSISTS);
+      const seats = rand(2, 8);
+      const cargo = rand(80, 2700);
+      const mass = rand(650, 2900);
+      const wheelbase = randFloat(2.05, 3.4);
+      const weightDist = randFloat(42,62,1) + " / " + randFloat(38,58,1);
+      const topSpeed = rand(135, 390);
+      const accel0_100 = randFloat(2.1, 14.0);
+      const braking100_0 = randFloat(28, 45);
+      const corneringG = randFloat(0.72, 1.5);
+      const comfort = randFloat(3.0, 28.0);
+      const drivability = randFloat(3.0, 27.0);
+      const offroad = randFloat(0.0, 1.0, 2);
+      const convertibleFactor = randFloat(0.0, 1.0, 2);
+      const economy = randFloat(4.0, 17.5);
+      const emissions = rand(75, 420);
+      const fuelOctane = pick([87,91,93,95,98,100]);
+      const price = rand(9500, 230000);
+      return {
+        meta: { body, carClass, enginePlace, drivetrain, name: generateName() },
+        engine: { config: engineConfig, aspiration, displacement: displacement + " L", valvetrain, fuelSystem, compression: compression + ":1", maxPower: maxPowerKW + " kW (" + Math.round(maxPowerKW*1.341) + " hp) @ " + peakPowerRPM + " rpm", torque: torqueNm + " Nm @ " + Math.round(peakPowerRPM*0.85) + " rpm", redline: redline + " rpm", octane: fuelOctane + " RON", fuelType: fuelType },
+        drivetrain: { gearbox: gearboxType + " " + gearCount + "-speed", diff: diffType },
+        chassis: { type: chassisType, material: chassisMat, panelMaterial: panelMat, frontSusp: frontSusp, rearSusp: rearSusp, dampers: damperType, wheelbase: wheelbase + " m" },
+        brakes: { front: frontBrake + " (" + frontCalipers + ")", rear: rearBrake + " (" + rearCalipers + ")" },
+        wheels: { size: wheelDiameter + "\"", tires: tireWidth + "/" + tireProfile + " R" + wheelDiameter },
+        interior: { seats: seats, cargo: cargo + " L", entertainment, assists },
+        specs: { mass: mass + " kg", weightDist, topSpeed: topSpeed + " km/h", acceleration: "0‑100 km/h: " + accel0_100 + " s", braking: braking100_0 + " m (100‑0)", cornering: corneringG + " g", comfort: comfort, drivability: drivability, offroad: offroad, convertible: convertibleFactor, economy: economy + " L/100km", emissions: emissions + " g/km", price: "$" + price.toLocaleString() },
+        raw: { displacement, maxPowerKW, torqueNm, compression, redline, gearCount, wheelDiameter, tireWidth, tireProfile, seats, cargo, mass, topSpeed, accel0_100, braking100_0, corneringG, comfort, drivability, offroad, convertibleFactor, economy, emissions, price }
+      };
+    }
+
+    function generateGoal() {
+      return { carClass: pick(CAR_CLASSES), body: pick(BODY_TYPES), enginePlace: pick(ENGINE_PLACEMENTS), drivetrain: pick(DRIVETRAINS), year: rand(1946, 2026) };
+    }
+
+    function renderFullSpec(data) {
+      const cls = data.meta.carClass;
+      const target = CLASS_TARGETS[cls] || null;
+      const r = data.raw;
+      function rated(prop, val) { if (!target || !(prop in target)) return ''; return getClassRatingClass(val, target[prop]); }
+      const e = data.engine, d = data.drivetrain, c = data.chassis, b = data.brakes, w = data.wheels, i = data.interior, s = data.specs;
+      return `
+        <div style="text-align:center;margin-bottom:0.5rem;"><strong>${data.meta.name}</strong></div>
+        <div class="class-score">Класс: ${cls}</div>
+        <div class="spec-grid">
+          <div class="spec-column"><h3>Общая информация</h3>
+            <div class="param"><span>Кузов</span><span class="${rated('body', data.meta.body)}">${data.meta.body}</span></div>
+            <div class="param"><span>Компоновка</span><span class="${rated('enginePlacement', data.meta.enginePlace)}">${data.meta.enginePlace}</span></div>
+            <div class="param"><span>Привод</span><span class="${rated('drive', data.meta.drivetrain)}">${data.meta.drivetrain}</span></div>
+            <div class="param"><span>Масса</span><span class="${rated('mass', r.mass)}">${s.mass}</span></div>
+            <div class="param"><span>Колёсная база</span><span>${c.wheelbase}</span></div>
+            <div class="param"><span>Мест</span><span class="${rated('seats', r.seats)}">${i.seats}</span></div>
+            <div class="param"><span>Багажник</span><span class="${rated('cargo', r.cargo)}">${i.cargo}</span></div>
+          </div>
+          <div class="spec-column"><h3>Двигатель</h3>
+            <div class="param"><span>Конфигурация</span><span class="${rated('engineConfig', e.config)}">${e.config}</span></div>
+            <div class="param"><span>Наддув</span><span class="${rated('aspiration', e.aspiration)}">${e.aspiration}</span></div>
+            <div class="param"><span>Объём</span><span class="${rated('displacement', r.displacement)}">${e.displacement}</span></div>
+            <div class="param"><span>ГРМ</span><span class="${rated('valvetrain', e.valvetrain)}">${e.valvetrain}</span></div>
+            <div class="param"><span>Топливная система</span><span class="${rated('fuelSystem', e.fuelSystem)}">${e.fuelSystem}</span></div>
+            <div class="param"><span>Степень сжатия</span><span class="${rated('compression', r.compression)}">${e.compression}</span></div>
+            <div class="param"><span>Макс. мощность</span><span class="${rated('powerRange', r.maxPowerKW)}">${e.maxPower}</span></div>
+            <div class="param"><span>Крутящий момент</span><span class="${rated('torque', r.torqueNm)}">${e.torque}</span></div>
+            <div class="param"><span>Redline</span><span class="${rated('redline', r.redline)}">${e.redline}</span></div>
+            <div class="param"><span>Октановое число</span><span>${e.octane}</span></div>
+            <div class="param"><span>Тип топлива</span><span class="${rated('fuelType', e.fuelType)}">${e.fuelType}</span></div>
+          </div>
+          <div class="spec-column"><h3>Трансмиссия</h3>
+            <div class="param"><span>Коробка передач</span><span class="${rated('gearbox', d.gearbox.split(' ')[0])}">${d.gearbox}</span></div>
+            <div class="param"><span>Передач</span><span class="${rated('gearCount', r.gearCount)}">${d.gearbox.split(' ').pop()}</span></div>
+            <div class="param"><span>Дифференциал</span><span class="${rated('diff', d.diff)}">${d.diff}</span></div>
+          </div>
+        </div>
+        <div class="spec-grid" style="margin-top:8px;">
+          <div class="spec-column"><h3>Шасси и подвеска</h3>
+            <div class="param"><span>Тип шасси</span><span class="${rated('chassis', c.type)}">${c.type}</span></div>
+            <div class="param"><span>Материал шасси</span><span class="${rated('chassisMaterial', c.material)}">${c.material}</span></div>
+            <div class="param"><span>Панели кузова</span><span class="${rated('panelMaterial', c.panelMaterial)}">${c.panelMaterial}</span></div>
+            <div class="param"><span>Передняя подвеска</span><span class="${rated('frontSusp', c.frontSusp)}">${c.frontSusp}</span></div>
+            <div class="param"><span>Задняя подвеска</span><span class="${rated('rearSusp', c.rearSusp)}">${c.rearSusp}</span></div>
+            <div class="param"><span>Амортизаторы</span><span class="${rated('dampers', c.dampers)}">${c.dampers}</span></div>
+          </div>
+          <div class="spec-column"><h3>Тормоза и колёса</h3>
+            <div class="param"><span>Передние тормоза</span><span class="${rated('brakes', b.front.split(' ')[0])}">${b.front}</span></div>
+            <div class="param"><span>Задние тормоза</span><span class="${rated('brakes', b.rear.split(' ')[0])}">${b.rear}</span></div>
+            <div class="param"><span>Диски</span><span class="${rated('wheelDiameter', r.wheelDiameter)}">${w.size}</span></div>
+            <div class="param"><span>Шины</span><span>${w.tires}</span></div>
+          </div>
+          <div class="spec-column"><h3>Интерьер и динамика</h3>
+            <div class="param"><span>Мультимедиа</span><span class="${rated('entertainment', i.entertainment)}">${i.entertainment}</span></div>
+            <div class="param"><span>Ассистенты</span><span class="${rated('assists', i.assists)}">${i.assists}</span></div>
+            <div class="param"><span>Комфорт</span><span class="${rated('comfortRange', r.comfort)}">${s.comfort}</span></div>
+            <div class="param"><span>Управляемость</span><span class="${rated('drivabilityRange', r.drivability)}">${s.drivability}</span></div>
+            <div class="param"><span>Макс. скорость</span><span class="${rated('topSpeed', r.topSpeed)}">${s.topSpeed}</span></div>
+            <div class="param"><span>Разгон 0‑100</span><span class="${rated('acceleration', r.accel0_100)}">${s.acceleration}</span></div>
+            <div class="param"><span>Тормозной путь</span><span class="${rated('braking', r.braking100_0)}">${s.braking}</span></div>
+            <div class="param"><span>Боковые перегрузки</span><span class="${rated('cornering', r.corneringG)}">${s.cornering}</span></div>
+          </div>
+        </div>
+        <div class="spec-grid" style="margin-top:8px;">
+          <div class="spec-column"><h3>Эксплуатационные</h3>
+            <div class="param"><span>Внедорожность</span><span class="${rated('offroad', r.offroad)}">${s.offroad}</span></div>
+            <div class="param"><span>Кабриолет-фактор</span><span class="${rated('convertible', r.convertibleFactor)}">${s.convertible}</span></div>
+            <div class="param"><span>Расход топлива</span><span class="${rated('economy', r.economy)}">${s.economy}</span></div>
+            <div class="param"><span>Выбросы CO₂</span><span class="${rated('emissions', r.emissions)}">${s.emissions}</span></div>
+            <div class="param"><span>Развесовка</span><span>${s.weightDist}</span></div>
+            <div class="param"><span>Цена (ориент.)</span><span class="${rated('price', r.price)}">${s.price}</span></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderGoal(data) {
+      return `
+        <div class="goal-box">
+          <div class="goal-title">${data.carClass}</div>
+          <div class="goal-desc">
+            <div><strong>Кузов:</strong> ${data.body}</div>
+            <div><strong>Двигатель:</strong> ${data.enginePlace}</div>
+            <div><strong>Привод:</strong> ${data.drivetrain}</div>
+            <div><strong>Год выпуска:</strong> ${data.year}</div>
+          </div>
+          <div style="margin-top:18px; color:#a0aac0;">Создайте автомобиль в Automation, ориентируясь на эту концепцию.</div>
+        </div>
+      `;
+    }
+
+    // ================== ФУНКЦИЯ ДЛЯ СОПЕРНИКА ==================
+    function renderRival() {
+      const fc = fixClass.value || null;
+      const fb = fixBody.value || null;
+      const car1 = generateFullSpec(fc, fb);
+      const car2 = generateFullSpec(fc, fb); // те же фильтры, но случайные параметры
+      return `
+        <div class="comparison-container">
+          <div class="comparison-column">${renderFullSpec(car1)}</div>
+          <div class="comparison-column">${renderFullSpec(car2)}</div>
+        </div>
+      `;
+    }
+
+    const output = document.getElementById("outputDisplay");
+    document.getElementById("fullSpecBtn").addEventListener("click", () => {
+      const fc = fixClass.value || null;
+      const fb = fixBody.value || null;
+      output.innerHTML = renderFullSpec(generateFullSpec(fc, fb));
+    });
+    document.getElementById("goalBtn").addEventListener("click", () => {
+      output.innerHTML = renderGoal(generateGoal());
+    });
+    document.getElementById("nameGenBtn").addEventListener("click", () => {
+      output.innerHTML = `<div style="text-align:center;font-size:2rem;">${generateName()}</div>`;
+    });
+    document.getElementById("rivalBtn").addEventListener("click", () => {
+      output.innerHTML = renderRival();
+    });
+  })();
+</script>
+</body>
+</html>
